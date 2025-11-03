@@ -1,0 +1,12 @@
+xhzst.png
+size:217,118
+filter:Linear,Linear
+pma:true
+你干嘛   哎呦
+bounds:146,16,100,69
+offsets:1,2,102,72
+rotate:90
+图层 12
+bounds:2,2,114,142
+offsets:1,2,116,145
+rotate:90

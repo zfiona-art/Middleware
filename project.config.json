@@ -1,0 +1,29 @@
+{
+    "appid": "tt047872c59b753b9107",
+    "projectname": "Middleware",
+    "unity": {
+        "build": {
+            "webgl": "D:\\Projects\\Middleware\\tt-minigame\\webgl_package-20251028_150848.zip",
+            "native": {
+                "il2cpp": "D:\\Projects\\Middleware\\tt-minigame\\tt-minigame\\native\\il2cpp.zip",
+                "apk": "D:\\Projects\\Middleware\\tt-minigame\\tt-minigame\\native\\intermediate.apk",
+                "fullApk": ""
+            },
+            "instantGame": ""
+        },
+        "publishType": "2",
+        "starkSdkVersion": "Without StarkSDK",
+        "unityToolsVersion": null,
+        "unityEngineVersion": "2022.3.61t8",
+        "arch": "both"
+    },
+    "setting": {
+        "urlCheck": true
+    },
+    "condition": {
+        "game": {
+            "current": -1,
+            "list": []
+        }
+    }
+}
