@@ -7,7 +7,7 @@ public class DataGame : ScriptableObject
 {
     public int maxTimeSeconds;
     public int maxPropNum;
-    public int maxEnemyNum;
     public float enemyInterval;
     public float panelWidth;
+    public int boundTreeCnt;
 }

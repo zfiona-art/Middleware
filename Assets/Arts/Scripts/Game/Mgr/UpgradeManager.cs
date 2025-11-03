@@ -18,7 +18,8 @@ public class UpgradeManager : Singleton<UpgradeManager>
         {
             {EUpgradeItem.MaxHealth,10},
             {EUpgradeItem.MoveSpeed,2},
-            {EUpgradeItem.BulletInterval,1},
+            {EUpgradeItem.BulletInterval,2},
+            {EUpgradeItem.BulletDistance,2},
             {EUpgradeItem.BulletCount,0},
             {EUpgradeItem.BulletDamage,10},
             {EUpgradeItem.CircleCount,4},
@@ -30,14 +31,16 @@ public class UpgradeManager : Singleton<UpgradeManager>
     public List<EUpgradeItem> GetItems()
     {
         var list = new List<EUpgradeItem>();
-        for (var i = 0; i < 3; i++)
+        var count = 3;
+        while (count > 0)
         {
             var key = (EUpgradeItem)Random.Range(0, upgradeDic.Count);
             var val = upgradeDic[key];
-            if (val <= 0 || (key==EUpgradeItem.CircleDamage && addition.cCount==0))
-                i--;
-            else
-                list.Add(key);
+            if (val <= 0) continue;
+            if(key==EUpgradeItem.CircleDamage && addition.cCount==0) continue;
+            if(list.Contains(key)) continue;
+            list.Add(key);
+            count--;
         }
 
         return list;
@@ -55,7 +58,10 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 describe = $"移动速度加成: {addition.moveSpeed}% -> {addition.moveSpeed + 50}%";
                 break;
             case EUpgradeItem.BulletInterval:
-                describe = $"攻击速度加成: {addition.bInterval}% -> {addition.bInterval + 50}%";
+                describe = $"攻击速度加成: {addition.bInterval}% -> {addition.bInterval + 30}%";
+                break;
+            case EUpgradeItem.BulletDistance:
+                describe = $"攻击距离加成: {addition.bDistance}% -> {addition.bDistance + 30}%";
                 break;
             case EUpgradeItem.BulletCount:
                 describe =  $"篮球数量: {addition.bCount + 1} -> {addition.bCount + 2}";
@@ -70,7 +76,6 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 describe = $"尖叫鸡伤害加成: {addition.cDamage} -> {addition.cDamage + 3}";
                 break;
         }
-
         return describe;
     }
     
@@ -87,8 +92,11 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 addition.moveSpeed += 50;
                 break;
             case EUpgradeItem.BulletInterval:
-                addition.bInterval += 50;
+                addition.bInterval += 30;
                 GameManager.Instance.player.ResetFire();
+                break;
+            case EUpgradeItem.BulletDistance:
+                addition.bDistance += 30;
                 break;
             case EUpgradeItem.BulletDamage:
                 addition.bDamage += 3;
@@ -110,6 +118,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
         MaxHealth,
         MoveSpeed,
         BulletInterval,
+        BulletDistance,
         BulletCount,
         BulletDamage,
         CircleCount,
@@ -121,6 +130,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
         public float maxHealth;
         public float moveSpeed;
         public float bInterval;
+        public float bDistance;
         public int bCount;
         public float bDamage;
         public int cCount;

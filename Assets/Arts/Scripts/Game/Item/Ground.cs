@@ -20,7 +20,7 @@ public class Ground : PoolItem
             return;
         GenProp("tree1", 60);
         GenProp("tree2", 50);
-        GenProp("thorn", 30);
+        GenProp("thorn", 40);
     }
 
     private void GenProp(string assetName, int p)
@@ -36,13 +36,12 @@ public class Ground : PoolItem
 
     public void TryGenEnemy()
     {
-        GenEnemy("enemy1", 60);
-        GenEnemy("enemy2", 30);
+        var e = ToolUtil.IsProbabilityOk(70) ? "enemy1" : "enemy2";
+        GenEnemy(e);
     }
     
-    private void GenEnemy(string assetName, int p)
+    private void GenEnemy(string assetName)
     {
-        if (!ToolUtil.IsProbabilityOk(p)) return;
         var go =  PoolManager.Instance.Get<Enemy>(assetName, GameManager.Instance.rootEnemies);
         if (!go) return;
         var playPos = GameManager.Instance.player.transform.position;

@@ -6,7 +6,8 @@ public class Player : PoolItem
 {
     public float health;
     public int level;
-    public int energyCnt;
+    private int energyCnt;
+    private bool isInvincible;//无敌状态
     
     public readonly vp_Timer.Handle bSpawnHandle = new ();
     private Vector2 movement;
@@ -38,6 +39,12 @@ public class Player : PoolItem
         level = 1;
         weapon2?.gameObject.SetActive(false);
         
+    }
+
+    public void SetSuperTime()
+    {
+        isInvincible = true;
+        vp_Timer.In(5, () => isInvincible = false);
     }
     
     public void ResetHealth()
@@ -102,11 +109,15 @@ public class Player : PoolItem
         var speed = data.moveSpeed * (1 + UpgradeManager.Instance.addition.moveSpeed * 0.01f);
         rb.MovePosition(rb.position + speed * Time.fixedDeltaTime * movement);
     }
-    
+
+    private float GetDistance()
+    {
+        return data.bulletDistance * (1 + UpgradeManager.Instance.addition.bDistance * 0.01f);
+    }
     private void SetAnimation()
     {
         if(!animator.GetBool(liveHash)) return;
-        var result = Physics2D.CircleCast(transform.position, data.bulletDistance, Vector2.zero,0, LayerMask.GetMask("Enemy"));
+        var result = Physics2D.CircleCast(transform.position, GetDistance(), Vector2.zero,0, LayerMask.GetMask("Enemy"));
         animator.SetBool(fireHash, result);
     }
 
@@ -146,7 +157,7 @@ public class Player : PoolItem
         var angle = Vector2.SignedAngle(Vector2.up, trDir);
         dirTr.rotation = Quaternion.Euler(0f, 0f, angle);
         
-        if (nearestDistance > data.bulletDistance) return;
+        if (nearestDistance > GetDistance()) return;
         var dir = (nearestEnemy.position - transform.position).normalized;
         var bullet = PoolManager.Instance.Get<Weapon>("weapon1",GameManager.Instance.rootBullets);
         bullet.transform.position = transform.position; 
@@ -156,6 +167,7 @@ public class Player : PoolItem
 
     private void BeHarmed(float damage)
     {
+        if(isInvincible) return;
         health = Mathf.Max(0, health - damage);
         hp.size = new Vector2(health / data.health, 1);
         if (health == 0)
@@ -169,8 +181,15 @@ public class Player : PoolItem
         }
     }
 
+    public float GetEnergyPro()
+    {
+        var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
+        return 1f * energyCnt / data.levelUpExps[index];
+    }
+
     private void OnCollisionEnter2D(Collision2D other)
     {
+        Debug.Log("Collision: " + other.transform.tag);
         if (other.transform.CompareTag("Enemy"))
         {
             var e = other.transform.GetComponent<Enemy>();
@@ -180,6 +199,7 @@ public class Player : PoolItem
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("Trigger: " + collision.tag);
         if (collision.transform.CompareTag("Energy"))
         {
             PoolManager.Instance.Dispose(collision.GetComponent<Energy>());
@@ -197,19 +217,24 @@ public class Player : PoolItem
         
         if (collision.CompareTag("Prop"))
         {
-            //Debug.Log("Prop:" + collision.gameObject.name);
             BeHarmed(1);
+        }
+
+        if (collision.CompareTag("Ground"))
+        {
+            var ground = collision.GetComponent<Ground>();
+            GameManager.Instance.TryGenProps(ground);
         }
     }
     
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Plane"))
-        {
-            GameManager.Instance.RepositionPanel(collision);
-        }
-    }
+    // private void OnTriggerExit2D(Collider2D collision)
+    // {
+    //     if (collision.CompareTag("Ground"))
+    //     {
+    //         GameManager.Instance.RepositionPanel(collision);
+    //     }
+    // }
     
     
     // private void OnDrawGizmos()

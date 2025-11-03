@@ -13,13 +13,13 @@ public class UIRevival : UIBase
 
     public void _btnAdClick()
     {
-        GameManager.Instance.SwitchState(GameStatus.Revival);
+        GameManager.Instance.SwitchState(GameStatus.SuperRevival);
         UIManager.Instance.CloseTopPanel(); 
     }
 
     public void _btnRestartClick()
     {
-        GameManager.Instance.SwitchState(GameStatus.ReStart);
+        GameManager.Instance.SwitchState(GameStatus.Revival);
         UIManager.Instance.ClosePanel(UIPath.revival);
     }
     

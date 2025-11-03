@@ -24,7 +24,7 @@ public class Enemy : PoolItem
     public override void OnSpawn()
     {
         base.OnSpawn();
-        health = data.health;
+        health = data.health + GameManager.Instance.GetCurLevelData().enemyAdd;
     }
 
     void FixedUpdate()

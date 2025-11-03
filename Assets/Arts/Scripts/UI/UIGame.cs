@@ -13,6 +13,7 @@ public class UIGame : UIBase
     private Text txtAchieve;
     private Slider slideSchedule;
     private Text txtSchedule;
+    private Text txtGameLevel;
 
     private readonly vp_Timer.Handle timerHandle = new ();
     private int curLeftTime;
@@ -22,19 +23,22 @@ public class UIGame : UIBase
         dataGame = Resources.Load<DataGame>("Data/Game");
         EventCtrl.RegisterAction(EventDefine.OnEnemyKill,OnEnemyKill);
         EventCtrl.RegisterAction(EventDefine.OnEnergyGet,OnEnergyGet);
+        EventCtrl.RegisterAction(EventDefine.OnGameLevelUp,OnGameLevelUp);
         btnSet.onClick.AddListener(OnBtnSetClick);
     }
 
-    private void OnEnable()
+    public override void Refresh()
     {
         OnEnemyKill(null);
         OnEnergyGet(null);
-        timerHandle?.Cancel();
+        
         TickTime(dataGame.maxTimeSeconds);
+        txtGameLevel.text = $"关卡:{GlobalManager.Instance.Level}";
     }
 
     private void TickTime(int tick)
     {
+        timerHandle?.Cancel();
         curLeftTime = tick;
         vp_Timer.In(0.1f,ShowLeftTime,0,1,timerHandle);
     }
@@ -61,18 +65,18 @@ public class UIGame : UIBase
     private void OnEnemyKill(object data)
     {
         txtAchieve.text = string.Format("{0:00000}", GameManager.Instance.curDeadEnemyNum);
-        slideSchedule.value = 1f * GameManager.Instance.curDeadEnemyNum / dataGame.maxEnemyNum;
+        slideSchedule.value = 1f * GameManager.Instance.curDeadEnemyNum / GameManager.Instance.GetCurLevelData().enemyCnt;
         txtSchedule.text = string.Format("关卡进度{0}%", Mathf.FloorToInt(slideSchedule.value * 100));
-        if (slideSchedule.value >= 1)
-        {
-            Debug.LogError("Game Success!");
-        }
     }
     
     private void OnEnergyGet(object data)
     {
-        var cnt = GameManager.Instance.player.energyCnt;
-        slideExp.value = cnt % 10 / 10f;
+        slideExp.value = GameManager.Instance.player.GetEnergyPro();
         txtLevel.text = GameManager.Instance.player.level.ToString();
+    }
+    
+    private void OnGameLevelUp(object data)
+    {
+        txtGameLevel.text = $"关卡:{GlobalManager.Instance.Level}";
     }
 }

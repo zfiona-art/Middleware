@@ -15,15 +15,23 @@ public class UIMain : UIBase
     private Image imgHead;
     private Text txtName;
     private Slider sliderLevel;
+    private Text txtLevel;
 
     private void Start()
     {
-        var id = Random.Range(101, 111);
+        var id = GlobalManager.Instance.Avatar;
+        if(id == 0)
+            id = Random.Range(101, 111);
         imgHead.sprite = Resources.Load<Sprite>("Image/Avatar/#" + id);
         txtName.text = "游客" + imgHead.sprite.name;
-        sliderLevel.value = 1f * GlobalManager.Instance.Level / GlobalManager.Instance.TotalLevel;
+        
     }
 
+    public override void Refresh()
+    {
+        sliderLevel.value = 1f * GlobalManager.Instance.Level / GlobalManager.TotalLevel;
+        txtLevel.text = $"{GlobalManager.Instance.Level}/{GlobalManager.TotalLevel}";
+    }
 
     public void _btnHomeClick()
     {
