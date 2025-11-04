@@ -10,15 +10,19 @@ using UnityEngine.U2D;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
-/// <summary>
-/// 高级资源包管理系统 (非MonoBehaviour版本)
-/// 主要功能：
-/// 1. 加密资源包加载与解密
-/// 2. 多平台路径自动处理
-/// 3. 资源缓存与内存管理
-/// 4. 支持多种资源类型加载
-/// 5. 线程安全的单例实现
-/// </summary>
+public class AssetBundleCache
+{
+    public int referencedCount;
+    public AssetBundle bundle;
+    public bool persistent;//常驻内存
+    
+    public void Unload()
+    {
+        bundle?.Unload(true);
+        bundle = null;
+    }
+}
+
 public sealed class ResMgr : Singleton<ResMgr>
 {
     private Dictionary<string, AssetBundle> loadedBundles = new Dictionary<string, AssetBundle>();
@@ -47,7 +51,7 @@ public sealed class ResMgr : Singleton<ResMgr>
         return bundle?.LoadAsset<T>(assetName);
     }
     
-    public void ReleaseBundle(string bundleName)
+    public void UnloadBundle(string bundleName)
     {
         if (loadedBundles.TryGetValue(bundleName, out var bundle))
         {

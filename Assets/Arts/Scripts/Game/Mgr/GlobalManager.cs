@@ -5,7 +5,8 @@ using UnityEngine;
 public class GlobalManager : Singleton<GlobalManager>
 {
     public static int TotalLevel; //每章10关
-    public int Level
+    public static int PlayerLevel;
+    public int GameLevel
     {
         get => PlayerPrefs.GetInt("PlayerLevel", 1);
         set => PlayerPrefs.SetInt("PlayerLevel", value);
@@ -16,4 +17,5 @@ public class GlobalManager : Singleton<GlobalManager>
         get => PlayerPrefs.GetInt("PlayerAvatar", 0);
         set => PlayerPrefs.SetInt("PlayerAvatar", value);
     }
+    
 }

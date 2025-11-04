@@ -6,25 +6,28 @@ using UnityEngine;
 public class Enemy : PoolItem
 {
     [SerializeField] private DataEnemy data;
-    
+
+    public static bool isActive;
     public float health; 
     private Animator animator;
     private Rigidbody2D rigid; 
     private Rigidbody2D target;
     private Vector3 direction;
+    private readonly int harmHash = Animator.StringToHash("harm");
+    private readonly int runHash = Animator.StringToHash("run");
     
     private void Awake()
     {
         direction = Vector3.one;
         animator = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
-        target = GameManager.Instance.player.GetComponent<Rigidbody2D>();
     }
 
     public override void OnSpawn()
     {
         base.OnSpawn();
-        health = data.health + GameManager.Instance.GetCurLevelData().enemyAdd;
+        health = data.health + GameManager.Instance.GetCurLevelData().healthAdd;
+        animator.SetBool(runHash,false);
     }
 
     void FixedUpdate()
@@ -35,6 +38,18 @@ public class Enemy : PoolItem
             return;
         }
         
+        if (!target)
+            target = GameManager.Instance.player.GetComponent<Rigidbody2D>();
+        if (!animator.GetBool(runHash))
+        {
+            var distance = Vector2.Distance(rigid.position, target.position);
+            if (isActive || distance < data.lookDistance)
+            {
+                animator.SetBool(runHash,true);
+                isActive = true;
+            }
+            return;
+        }
         // 方向
         direction.x = target.position.x < rigid.position.x ? 1 : -1;
         transform.localScale = direction;
@@ -66,9 +81,11 @@ public class Enemy : PoolItem
             DoHarm();
     }
 
-    private readonly int harmHash = Animator.StringToHash("harm");
+    
     void DoHarm()
     {
+        isActive =  true;
+        animator.SetBool(runHash,true);
         animator.SetTrigger(harmHash);
     }
 
@@ -81,7 +98,7 @@ public class Enemy : PoolItem
 
     public float GetDamage()
     {
-        return data.damage;
+        return data.damage + GameManager.Instance.GetCurLevelData().damageAdd;
     }
 }
 

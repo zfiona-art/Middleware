@@ -33,7 +33,7 @@ public class UIGame : UIBase
         OnEnergyGet(null);
         
         TickTime(dataGame.maxTimeSeconds);
-        txtGameLevel.text = $"关卡:{GlobalManager.Instance.Level}";
+        txtGameLevel.text = $"关卡:{GlobalManager.Instance.GameLevel}";
     }
 
     private void TickTime(int tick)
@@ -65,18 +65,19 @@ public class UIGame : UIBase
     private void OnEnemyKill(object data)
     {
         txtAchieve.text = string.Format("{0:00000}", GameManager.Instance.curDeadEnemyNum);
-        slideSchedule.value = 1f * GameManager.Instance.curDeadEnemyNum / GameManager.Instance.GetCurLevelData().enemyCnt;
+        slideSchedule.value = 1f * GameManager.Instance.curDeadEnemyNum / GameManager.Instance.GetCurLevelData().GetEnemyCnt();
         txtSchedule.text = string.Format("关卡进度{0}%", Mathf.FloorToInt(slideSchedule.value * 100));
     }
     
     private void OnEnergyGet(object data)
     {
-        slideExp.value = GameManager.Instance.player.GetEnergyPro();
-        txtLevel.text = GameManager.Instance.player.level.ToString();
+        var val = GameManager.Instance.player ? GameManager.Instance.player.GetEnergyPro() : 0;
+        slideExp.value = val;
+        txtLevel.text = GlobalManager.PlayerLevel.ToString();
     }
     
     private void OnGameLevelUp(object data)
     {
-        txtGameLevel.text = $"关卡:{GlobalManager.Instance.Level}";
+        txtGameLevel.text = $"关卡:{GlobalManager.Instance.GameLevel}";
     }
 }

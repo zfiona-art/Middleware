@@ -34,29 +34,6 @@ public class Ground : PoolItem
         GameManager.Instance.AddPropNum(1);
     }
 
-    public void TryGenEnemy()
-    {
-        var e = ToolUtil.IsProbabilityOk(70) ? "enemy1" : "enemy2";
-        GenEnemy(e);
-    }
-    
-    private void GenEnemy(string assetName)
-    {
-        var go =  PoolManager.Instance.Get<Enemy>(assetName, GameManager.Instance.rootEnemies);
-        if (!go) return;
-        var playPos = GameManager.Instance.player.transform.position;
-        var spawnPoints = new List<Vector3>()
-        {
-            playPos + size.y * Vector3.up + Random.Range(-3,3) * Vector3.right,
-            playPos + size.y * Vector3.down + Random.Range(-3,3) * Vector3.right,
-            playPos + size.x * Vector3.left + Random.Range(-3,3) * Vector3.up,
-            playPos + size.x * Vector3.right + Random.Range(-3,3) * Vector3.up,
-        };
-        go.transform.position = spawnPoints[Random.Range(0,spawnPoints.Count)];
-        go.transform.localScale = Vector3.one;
-        GameManager.Instance.AddEnemyNum(1);
-    }
-
     // private void OnDrawGizmos()
     // {
     //     Gizmos.color = Color.green;

@@ -8,40 +8,41 @@ using UnityEngine.UI;
 
 public class Test : MonoBehaviour
 {
-    public Image _img;
-    public Text _txt;
+    public class ListNode
+    {
+        public int val;
+        public ListNode next;
+        public ListNode(int val = 0, ListNode next = null)
+        {
+            this.val = val;
+            this.next = next;
+        }
+    }
+    private ListNode ReverseList(ListNode l)
+    {
+        ListNode p;
+        ListNode c;
+        ListNode n;
+
+        p = null;
+        c = l.next;
+        while (c != null)
+        {
+            n = c.next;
+            c.next = p;
+            p = c;
+            c = n;
+        }
+        return p;
+    }
+
     void Start()
     {
-        Debug.Log("Start");
-        LoadSpriteAtlas();
-        _img.rectTransform.DOLocalMoveY(200, 1f).SetLoops(-1, LoopType.Yoyo);
+        // ListNode head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4))));
+        // head = ReverseList(head);
+        // Debug.Log(head.val);
         
-        vp_Timer.In(3, () =>
-        {
-            _txt.text = "恭喜发财";
-        });
+        
     }
 
-    async void LoadSpriteAtlas()
-    {
-        try
-        {
-            await UniTask.Delay(2000);
-            //_img.sprite = Resources.Load<Sprite>("jlxh");
-            _img.sprite = ResMgr.Instance.LoadObjectSync<Sprite>("chinesesimplified", "ui_dashTitle");
-            _img.SetNativeSize();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-        }
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            _txt.text += "财";
-        }
-    }
 }

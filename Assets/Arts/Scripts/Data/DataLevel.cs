@@ -3,16 +3,50 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Level", menuName = "Data/Level", order = 4)]
+[CreateAssetMenu(fileName = "GameLevel", menuName = "Data/GameLevel", order = 4)]
 public class DataLevel : ScriptableObject
 {
-    public List<Data> array = new ();
+    public List<Level> array = new ();
     
     [Serializable]
-    public class Data
+    public class Level
     {
         public int groundCnt;
-        public int enemyCnt;
-        public float enemyAdd;
+        public int healthAdd;
+        public int damageAdd;
+        public List<Round> rounds = new ();
+
+        public int GetEnemyCnt()
+        {
+            var cnt = 0;
+            foreach (var round in rounds)
+            {
+                foreach (var enemy in round.enemies)
+                    cnt += enemy.cnt;
+            }
+            return cnt;
+        }
+
+        public int GetEnemyCnt(int roundId)
+        {
+            var cnt = 0;
+            foreach (var enemy in rounds[roundId].enemies)
+                cnt += enemy.cnt;
+            return cnt;
+        }
+    }
+    
+    [Serializable]
+    public class Round
+    {
+        public List<Enemy> enemies = new(); 
+    }
+    
+    [Serializable]
+    public class Enemy
+    {
+        public int id;
+        public int cnt;
+        public Vector2 pos;
     }
 }

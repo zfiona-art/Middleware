@@ -20,8 +20,11 @@ public class UIMain : UIBase
     private void Start()
     {
         var id = GlobalManager.Instance.Avatar;
-        if(id == 0)
+        if (id == 0)
+        {
             id = Random.Range(101, 111);
+            GlobalManager.Instance.Avatar = id;
+        }
         imgHead.sprite = Resources.Load<Sprite>("Image/Avatar/#" + id);
         txtName.text = "游客" + imgHead.sprite.name;
         
@@ -29,8 +32,8 @@ public class UIMain : UIBase
 
     public override void Refresh()
     {
-        sliderLevel.value = 1f * GlobalManager.Instance.Level / GlobalManager.TotalLevel;
-        txtLevel.text = $"{GlobalManager.Instance.Level}/{GlobalManager.TotalLevel}";
+        sliderLevel.value = 1f * GlobalManager.Instance.GameLevel / GlobalManager.TotalLevel;
+        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GlobalManager.TotalLevel}";
     }
 
     public void _btnHomeClick()

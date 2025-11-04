@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,10 +18,10 @@ public class GameManager : MonoBehaviour
     public Transform rootEnergies;//能量根节点
     //地板部分
     [SerializeField] private int curPropNum;
-    private Ground mainGround;
     //敌人部分
     private readonly vp_Timer.Handle eSpawnHandle = new ();
-    public int curGenEnemyNum;
+    private int roundId;
+    public int curLiveEnemyNum;
     public int curDeadEnemyNum;
     // 玩家对象
     public CinemachineVirtualCamera virtualCamera;
@@ -31,7 +32,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        
         dataGame = Resources.Load<DataGame>("Data/Game");
         dataLevel = Resources.Load<DataLevel>("Data/Level");
         
@@ -44,9 +44,9 @@ public class GameManager : MonoBehaviour
     
     public void StartGame()
     {
-        TryGenPlayer();
-        vp_Timer.In(dataGame.enemyInterval, TryGenEnemy,0,dataGame.enemyInterval,eSpawnHandle);
-        SwitchState(GameStatus.Playing);
+        vp_Timer.In(0.5f, TryGenPlayer);
+        vp_Timer.In(0f, TryGenEnemy,0,dataGame.enemyInterval,eSpawnHandle);
+        SwitchState(GameStatus.Paused);
     }
     
     private void CreateMap()
@@ -70,6 +70,7 @@ public class GameManager : MonoBehaviour
         }
         //生成边界
         var tree = Resources.Load<Prop>("Prefab/Game/tree1");
+        tree.gameObject.layer = LayerMask.NameToLayer("Default");
         var treeDis = data.panelWidth / dataGame.boundTreeCnt;
         var cnt = panelCnt * treeCnt;
         //纵向
@@ -112,11 +113,13 @@ public class GameManager : MonoBehaviour
         {
             case GameStatus.Playing:
                 eSpawnHandle.Paused = false;
-                player.bSpawnHandle.Paused = false;
+                if(player)
+                    player.bSpawnHandle.Paused = false;
                 break;
             case GameStatus.Paused:
                 eSpawnHandle.Paused = true;
-                player.bSpawnHandle.Paused = true;
+                if(player)
+                    player.bSpawnHandle.Paused = true;
                 break;
             case GameStatus.ReStart:
                 SwitchState(GameStatus.End);
@@ -136,11 +139,10 @@ public class GameManager : MonoBehaviour
                 player.bSpawnHandle.Cancel();
                 PoolManager.Instance.Clear();
                 UpgradeManager.Instance.Reset();
-                
                 curPropNum = 0;
-                curGenEnemyNum = 0;
+                roundId = 0;
                 curDeadEnemyNum = 0;
-                virtualCamera.transform.position = Vector3.forward * -10;
+                curLiveEnemyNum = 0;
                 player.gameObject.DestroySelf();
                 rootEnemies.gameObject.DestroyAllChild();
                 rootEnergies.gameObject.DestroyAllChild();
@@ -164,42 +166,60 @@ public class GameManager : MonoBehaviour
         
         player.transform.localPosition = Vector3.zero;
         player.transform.localScale = Vector3.zero;
-        player.transform.DOScale(1, 0.5f);
+        player.transform.DOScale(1, 0.5f).OnComplete(() => SwitchState(GameStatus.Playing));
     }
     
     public void TryGenProps(Ground ground)
     {
-        mainGround = ground;
         if(curPropNum >= dataGame.maxPropNum) return;
         ground.TryGenProps(); 
     }
 
     public void AddPropNum(int num)
     {
-        curPropNum ++;
+        curPropNum += num;
     }
 
     private void TryGenEnemy()
     {
-        if(curGenEnemyNum >= GetCurLevelData().enemyCnt) return;
-        mainGround?.TryGenEnemy();
+        if (curLiveEnemyNum > 0) return;
+        if (roundId == GetCurLevelData().rounds.Count) return;
+        
+        curLiveEnemyNum = 0;
+        foreach (var enemy in GetCurLevelData().rounds[roundId].enemies)
+        {
+            for (var i = 0; i < enemy.cnt; i++)
+            {
+                var go =  PoolManager.Instance.Get<Enemy>("enemy" + enemy.id,rootEnemies);
+                var offset = Vector2.zero;
+                if (i == 0)
+                    offset = enemy.id == 1 ? Vector2.right * 0.1f : Vector2.up * 0.1f;
+                go.transform.position = enemy.pos + offset;
+                curLiveEnemyNum++;
+            }
+        }
+        roundId++;
     }
     
-    public void AddEnemyNum(int num)
-    {
-        curGenEnemyNum ++;
-    }
-
     public void TryGenEnergy(Enemy enemy)
     {
+        curLiveEnemyNum--;
+        if (curLiveEnemyNum == 0)
+            Enemy.isActive = false;
+        
         curDeadEnemyNum++;
-        if (curDeadEnemyNum == GetCurLevelData().enemyCnt)
+        if (curDeadEnemyNum == GetCurLevelData().GetEnemyCnt())
         {
             Debug.Log("Game Success!");
             SwitchState(GameStatus.Paused);
-            GlobalManager.Instance.Level++;
+            GlobalManager.Instance.GameLevel++;
             EventCtrl.SendEvent(EventDefine.OnGameLevelUp);
-            UIManager.Instance.OpenPanel(UIPath.win);
+
+            player.transform.DOScale(0, 0.6f).OnComplete(() =>
+            {
+                player.transform.position = Vector3.zero;
+                UIManager.Instance.OpenPanel(UIPath.win);
+            });
         }
         
         var go =  PoolManager.Instance.Get<Energy>("energy",rootEnergies);
@@ -207,9 +227,9 @@ public class GameManager : MonoBehaviour
         go.transform.position = enemy.transform.position;
     }
 
-    public DataLevel.Data GetCurLevelData()
+    public DataLevel.Level GetCurLevelData()
     {
-        return dataLevel.array[GlobalManager.Instance.Level - 1];
+        return dataLevel.array[GlobalManager.Instance.GameLevel - 1];
     }
 }
 

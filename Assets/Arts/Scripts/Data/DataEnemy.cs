@@ -8,4 +8,5 @@ public class DataEnemy : ScriptableObject
     public float health;
     public float moveSpeed;
     public float damage;
+    public float lookDistance;
 }

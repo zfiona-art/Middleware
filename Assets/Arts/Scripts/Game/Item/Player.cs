@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Player : PoolItem
 {
-    public float health;
-    public int level;
+    private float health;
     private int energyCnt;
     private bool isInvincible;//无敌状态
     
@@ -36,9 +35,8 @@ public class Player : PoolItem
         ResetHealth();
         ResetFire();
         energyCnt = 0;
-        level = 1;
+        GlobalManager.PlayerLevel = 1;
         weapon2?.gameObject.SetActive(false);
-        
     }
 
     public void SetSuperTime()
@@ -136,6 +134,9 @@ public class Player : PoolItem
     // 发射子弹
     private void Fire()
     {
+        if (GameManager.Instance.status != GameStatus.Playing)
+            return;
+        
         var results = Physics2D.CircleCastAll(transform.position, 500, Vector2.zero,0, LayerMask.GetMask("Enemy"));
         //获取最近的怪
         float nearestDistance = 500;
@@ -150,14 +151,16 @@ public class Player : PoolItem
                 nearestEnemy = target.transform;
             }
         }
-        dirTr.gameObject.SetActive(nearestEnemy);
-        
+        dirTr.gameObject.SetActive(false);
         if(nearestEnemy == null) return;
-        var trDir = nearestEnemy.transform.position - transform.position;
-        var angle = Vector2.SignedAngle(Vector2.up, trDir);
-        dirTr.rotation = Quaternion.Euler(0f, 0f, angle);
-        
-        if (nearestDistance > GetDistance()) return;
+        if (nearestDistance > GetDistance())
+        {
+            var trDir = nearestEnemy.transform.position - transform.position;
+            var angle = Vector2.SignedAngle(Vector2.up, trDir);
+            dirTr.rotation = Quaternion.Euler(0f, 0f, angle);
+            dirTr.gameObject.SetActive(true);
+            return;
+        }
         var dir = (nearestEnemy.position - transform.position).normalized;
         var bullet = PoolManager.Instance.Get<Weapon>("weapon1",GameManager.Instance.rootBullets);
         bullet.transform.position = transform.position; 
@@ -183,7 +186,7 @@ public class Player : PoolItem
 
     public float GetEnergyPro()
     {
-        var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
+        var index = Mathf.Min(GlobalManager.PlayerLevel - 1, data.levelUpExps.Count - 1);
         return 1f * energyCnt / data.levelUpExps[index];
     }
 
@@ -204,11 +207,11 @@ public class Player : PoolItem
         {
             PoolManager.Instance.Dispose(collision.GetComponent<Energy>());
             energyCnt++;
-            var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
+            var index = Mathf.Min(GlobalManager.PlayerLevel - 1, data.levelUpExps.Count - 1);
             if (energyCnt == data.levelUpExps[index]) //升级
             {
                 energyCnt = 0;
-                level++;
+                GlobalManager.PlayerLevel++;
                 GameManager.Instance.SwitchState(GameStatus.Paused);
                 UIManager.Instance.OpenPanel(UIPath.upgrade);
             }
