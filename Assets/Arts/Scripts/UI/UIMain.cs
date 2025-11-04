@@ -9,8 +9,7 @@ public class UIMain : UIBase
 {
     private Button btnStart;
     private Button btnHome;
-    private Button btnLeft;
-    private Button btnRight;
+    private Button btnShop;
 
     private Image imgHead;
     private Text txtName;
@@ -38,19 +37,15 @@ public class UIMain : UIBase
 
     public void _btnHomeClick()
     {
-        Debug.Log("btnHomeClick");
+        Debug.Log("_btnHomeClick");
     }
     
-    public void _btnLeftClick()
+    public void _btnShopClick()
     {
-        Debug.Log("_btnLeftClick");
+        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.OpenPanel(UIPath.shop);
     }
     
-    public void _btnRightClick()
-    {
-        Debug.Log("_btnRightClick");
-    }
-
     public void _btnStartClick()
     {
         GameManager.Instance.StartGame();
