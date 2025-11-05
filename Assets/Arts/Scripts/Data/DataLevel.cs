@@ -20,18 +20,7 @@ public class DataLevel : ScriptableObject
         {
             var cnt = 0;
             foreach (var round in rounds)
-            {
-                foreach (var enemy in round.enemies)
-                    cnt += enemy.cnt;
-            }
-            return cnt;
-        }
-
-        public int GetEnemyCnt(int roundId)
-        {
-            var cnt = 0;
-            foreach (var enemy in rounds[roundId].enemies)
-                cnt += enemy.cnt;
+                cnt += round.enemies.Count;  
             return cnt;
         }
     }
@@ -46,7 +35,6 @@ public class DataLevel : ScriptableObject
     public class Enemy
     {
         public int id;
-        public int cnt;
         public Vector2 pos;
     }
 }

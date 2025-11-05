@@ -188,15 +188,9 @@ public class GameManager : MonoBehaviour
         curLiveEnemyNum = 0;
         foreach (var enemy in GetCurLevelData().rounds[roundId].enemies)
         {
-            for (var i = 0; i < enemy.cnt; i++)
-            {
-                var go =  PoolManager.Instance.Get<Enemy>("enemy" + enemy.id,rootEnemies);
-                var offset = Vector2.zero;
-                if (i == 0)
-                    offset = enemy.id == 1 ? Vector2.right * 0.1f : Vector2.up * 0.1f;
-                go.transform.position = enemy.pos + offset;
-                curLiveEnemyNum++;
-            }
+            var go =  PoolManager.Instance.Get<Enemy>("enemy" + enemy.id,rootEnemies);
+            go.transform.position = enemy.pos;
+            curLiveEnemyNum++;
         }
         roundId++;
     }

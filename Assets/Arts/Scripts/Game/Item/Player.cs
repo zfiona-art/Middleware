@@ -137,7 +137,7 @@ public class Player : PoolItem
         if (GameManager.Instance.status != GameStatus.Playing)
             return;
         
-        var results = Physics2D.CircleCastAll(transform.position, 500, Vector2.zero,0, LayerMask.GetMask("Enemy"));
+        var results = Physics2D.CircleCastAll(transform.position, 100, Vector2.zero,0, LayerMask.GetMask("Enemy"));
         //获取最近的怪
         float nearestDistance = 500;
         Transform nearestEnemy = null;
