@@ -5,16 +5,18 @@ using UnityEngine;
 
 public class Enemy : PoolItem
 {
-    [SerializeField] private DataEnemy data;
+    [SerializeField] protected DataEnemy data;
 
-    public static bool isActive;
-    public float health; 
+    public static bool IsActive;
+    private float health; 
     private Animator animator;
-    private Rigidbody2D rigid; 
-    private Rigidbody2D target;
-    private Vector3 direction;
-    private readonly int harmHash = Animator.StringToHash("harm");
+    protected Rigidbody2D rigid; 
+    protected Rigidbody2D target;
+    
     private readonly int runHash = Animator.StringToHash("run");
+    private readonly int harmHash = Animator.StringToHash("harm");
+    private Vector3 direction;
+    private float attackTime;
     
     private void Awake()
     {
@@ -30,23 +32,21 @@ public class Enemy : PoolItem
         animator.SetBool(runHash,false);
     }
 
-    void FixedUpdate()
+    protected void StopRun()
     {
-        if (GameManager.Instance.status != GameStatus.Playing)
-        {
-            rigid.velocity = Vector3.zero;
-            return;
-        }
-        
-        if (!target)
-            target = GameManager.Instance.player.GetComponent<Rigidbody2D>();
+        animator.SetBool(runHash, false);
+        rigid.velocity = Vector3.zero;
+    }
+
+    protected virtual void DoLoop()
+    {
         if (!animator.GetBool(runHash))
         {
             var distance = Vector2.Distance(rigid.position, target.position);
-            if (isActive || distance < data.lookDistance)
+            if (IsActive || distance < data.lookDistance)
             {
                 animator.SetBool(runHash,true);
-                isActive = true;
+                IsActive = true;
             }
             return;
         }
@@ -57,6 +57,34 @@ public class Enemy : PoolItem
         var dirVec = target.position - rigid.position;
         var nextVec = data.moveSpeed * Time.fixedDeltaTime * dirVec.normalized;
         rigid.MovePosition(rigid.position + nextVec);
+    }
+
+    void FixedUpdate()
+    {
+        if (GameManager.Instance.status != GameStatus.Playing)
+        {
+            rigid.velocity = Vector3.zero;
+            return;
+        }
+        if (!target)
+            target = GameManager.Instance.player.GetComponent<Rigidbody2D>();
+        
+        DoLoop();
+    }
+
+    private bool CanDamage()
+    {
+        return Time.realtimeSinceStartup - attackTime > data.damageInterval;
+    }
+    
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.collider.CompareTag("Player") && CanDamage())
+        {
+            attackTime = Time.realtimeSinceStartup;
+            var p = other.transform.GetComponent<Player>();
+            p.BeHarmed(GetDamage());
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -84,7 +112,7 @@ public class Enemy : PoolItem
     
     void DoHarm()
     {
-        isActive =  true;
+        IsActive =  true;
         animator.SetBool(runHash,true);
         animator.SetTrigger(harmHash);
     }
@@ -96,7 +124,7 @@ public class Enemy : PoolItem
         EventCtrl.SendEvent(EventDefine.OnEnemyKill);
     }
 
-    public float GetDamage()
+    protected float GetDamage()
     {
         return data.damage + GameManager.Instance.GetCurLevelData().damageAdd;
     }

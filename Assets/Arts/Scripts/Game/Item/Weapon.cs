@@ -1,18 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//子弹类武器
 public class Weapon : PoolItem
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public float damage;
 
-    // Update is called once per frame
-    void Update()
+    private void OnBecameInvisible()
     {
-        
+        PoolManager.Instance.Dispose(this);
     }
 }

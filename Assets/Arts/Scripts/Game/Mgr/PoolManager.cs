@@ -7,22 +7,17 @@ using Object = UnityEngine.Object;
 
 public class PoolItem : MonoBehaviour
 {
-    private int activeCount;
-    private float unActiveTime;
+   
     public virtual void OnSpawn()
     {
         gameObject.SetActive(true);
-        activeCount++;
     }
 
     public virtual void OnDespawn()
     {
         gameObject.SetActive(false);
-        activeCount--;
-        if(activeCount == 0)
-            unActiveTime = Time.realtimeSinceStartup;
     }
-    public bool CanDelete => Time.realtimeSinceStartup - unActiveTime >= 5;
+    
 }
 
 public class PoolManager : Singleton<PoolManager>

@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Spine.Unity;
 using UnityEngine;
@@ -162,13 +163,14 @@ public class Player : PoolItem
             return;
         }
         var dir = (nearestEnemy.position - transform.position).normalized;
-        var bullet = PoolManager.Instance.Get<Weapon>("weapon1",GameManager.Instance.rootBullets);
+        var bullet = PoolManager.Instance.Get<Weapon>("weapon",GameManager.Instance.rootBullets);
         bullet.transform.position = transform.position; 
         bullet.transform.rotation = Quaternion.FromToRotation(Vector3.up, dir); 
         bullet.GetComponent<Rigidbody2D>().velocity = dir * data.bulletSpeed;
+        bullet.damage = GetWeaponDamage(1);
     }
 
-    private void BeHarmed(float damage)
+    public void BeHarmed(float damage)
     {
         if(isInvincible) return;
         health = Mathf.Max(0, health - damage);
@@ -190,19 +192,15 @@ public class Player : PoolItem
         return 1f * energyCnt / data.levelUpExps[index];
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        Debug.Log("Collision: " + other.transform.tag);
-        if (other.transform.CompareTag("Enemy"))
-        {
-            var e = other.transform.GetComponent<Enemy>();
-            BeHarmed(e.GetDamage());
-        }
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Trigger: " + collision.tag);
+        if (collision.CompareTag("Ground"))
+        {
+            var ground = collision.GetComponent<Ground>();
+            GameManager.Instance.TryGenProps(ground);
+        }
+        
         if (collision.transform.CompareTag("Energy"))
         {
             PoolManager.Instance.Dispose(collision.GetComponent<Energy>());
@@ -222,11 +220,11 @@ public class Player : PoolItem
         {
             BeHarmed(1);
         }
-
-        if (collision.CompareTag("Ground"))
+        
+        if (collision.CompareTag("EnemyWeapon"))
         {
-            var ground = collision.GetComponent<Ground>();
-            GameManager.Instance.TryGenProps(ground);
+            BeHarmed(collision.GetComponent<Weapon>().damage);
+            PoolManager.Instance.Dispose(collision.GetComponent<Weapon>());
         }
     }
     

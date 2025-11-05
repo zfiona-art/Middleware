@@ -199,7 +199,7 @@ public class GameManager : MonoBehaviour
     {
         curLiveEnemyNum--;
         if (curLiveEnemyNum == 0)
-            Enemy.isActive = false;
+            Enemy.IsActive = false;
         
         curDeadEnemyNum++;
         if (curDeadEnemyNum == GetCurLevelData().GetEnemyCnt())

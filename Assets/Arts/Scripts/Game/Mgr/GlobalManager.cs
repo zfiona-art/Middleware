@@ -8,8 +8,8 @@ public class GlobalManager : Singleton<GlobalManager>
     public static int PlayerLevel;
     public int GameLevel
     {
-        get => PlayerPrefs.GetInt("PlayerLevel", 1);
-        set => PlayerPrefs.SetInt("PlayerLevel", value);
+        get => PlayerPrefs.GetInt("GameLevel", 1);
+        set => PlayerPrefs.SetInt("GameLevel", value);
     }
 
     public int Avatar
