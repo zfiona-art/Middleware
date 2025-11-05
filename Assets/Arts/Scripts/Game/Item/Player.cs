@@ -75,6 +75,7 @@ public class Player : PoolItem
             child.localEulerAngles = perAngle * i * Vector3.forward;
             child.gameObject.SetActive(i < maxCnt);
         }
+        weapon2.damage = GetWeaponDamage(2);
     }
     
     void Update()
@@ -126,7 +127,7 @@ public class Player : PoolItem
             weapon2.transform.Rotate(Vector3.back, data.circleSpeed * Time.deltaTime);
     }
 
-    public float GetWeaponDamage(int id)
+    private float GetWeaponDamage(int id)
     {
         return id == 1 ? data.bulletDamage * (1 + UpgradeManager.Instance.addition.bDamage) 
             : data.circleDamage * (1 + UpgradeManager.Instance.addition.cDamage);

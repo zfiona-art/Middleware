@@ -89,14 +89,11 @@ public class Enemy : PoolItem
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Weapon1"))
+        if (collision.CompareTag("Weapon"))
         {
-            PoolManager.Instance.Dispose(collision.GetComponent<Weapon>());
-            health -= GameManager.Instance.player.GetWeaponDamage(1);
-        }
-        else if (collision.CompareTag("Weapon2"))
-        {
-            health -= GameManager.Instance.player.GetWeaponDamage(2);
+            var weapon = collision.GetComponentInParent<Weapon>();
+            health -= weapon.damage;
+            PoolManager.Instance.Dispose(weapon);
         }
         else
         {

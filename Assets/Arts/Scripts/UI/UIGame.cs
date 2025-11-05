@@ -14,6 +14,9 @@ public class UIGame : UIBase
     private Slider slideSchedule;
     private Text txtSchedule;
     private Text txtGameLevel;
+    private Button btnSkill1;
+    private Button btnSkill2;
+    private Button btnSkill3;
 
     private readonly vp_Timer.Handle timerHandle = new ();
     private int curLeftTime;
@@ -61,6 +64,20 @@ public class UIGame : UIBase
         var s = timerHandle.Paused ? GameStatus.Paused : GameStatus.Playing;
         GameManager.Instance.SwitchState(s);
     }
+
+    private void OnBtnSkill1Click()
+    {
+        
+    }
+    private void OnBtnSkill2Click()
+    {
+        
+    }
+    private void OnBtnSkill3Click()
+    {
+        
+    }
+    
     
     private void OnEnemyKill(object data)
     {
