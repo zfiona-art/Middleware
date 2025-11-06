@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class GlobalManager : Singleton<GlobalManager>
 {
-    public static int TotalLevel; //每章10关
+    public const int ChapterLevelCnt = 10;
     public static int PlayerLevel;
     public int GameLevel
     {
         get => PlayerPrefs.GetInt("GameLevel", 1);
         set => PlayerPrefs.SetInt("GameLevel", value);
     }
+
+    public int ChapterId => GameLevel / 10 + 1;
 
     public int Avatar
     {

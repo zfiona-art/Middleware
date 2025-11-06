@@ -19,8 +19,11 @@ public class Ground : PoolItem
         if (col != null)
             return;
         GenProp("tree1", 60);
-        GenProp("tree2", 50);
-        GenProp("thorn", 40);
+        GenProp("tree2", 60);
+        GenProp("thorn", 30);
+        GenProp("grass1", 30);
+        GenProp("grass2", 30);
+        GenProp("grass3", 30);
     }
 
     private void GenProp(string assetName, int p)

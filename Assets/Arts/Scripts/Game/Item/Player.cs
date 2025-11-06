@@ -189,11 +189,6 @@ public class Player : PoolItem
             EventCtrl.SendEvent(EventDefine.OnEnergyGet);
         }
         
-        if (collision.CompareTag("Prop"))
-        {
-            BeHarmed(1);
-        }
-        
         if (collision.CompareTag("EnemyWeapon"))
         {
             var weapon = collision.GetComponent<Weapon>();

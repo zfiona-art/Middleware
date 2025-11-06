@@ -10,7 +10,10 @@ public class UIMain : UIBase
     private Button btnStart;
     private Button btnHome;
     private Button btnShop;
+    private Button btnLeft;
+    private Button btnRight;
 
+    private Text txtChapter;
     private Image imgHead;
     private Text txtName;
     private Slider sliderLevel;
@@ -31,8 +34,9 @@ public class UIMain : UIBase
 
     public override void Refresh()
     {
-        sliderLevel.value = 1f * GlobalManager.Instance.GameLevel / GlobalManager.TotalLevel;
-        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GlobalManager.TotalLevel}";
+        sliderLevel.value = 1f * GlobalManager.Instance.GameLevel / GameManager.Instance.TotalLevelCnt;
+        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GameManager.Instance.TotalLevelCnt}";
+        txtChapter.text = $"第{GlobalManager.Instance.ChapterId}章";
     }
 
     public void _btnHomeClick()

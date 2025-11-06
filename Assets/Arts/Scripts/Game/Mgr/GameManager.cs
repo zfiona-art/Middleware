@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour
         
         PoolManager.Instance.Init();
         UpgradeManager.Instance.Init();
-        GlobalManager.TotalLevel = dataLevel.array.Count;
         UIManager.Instance.OpenPanel(UIPath.loading);
         CreateMap();
     }
@@ -207,7 +206,8 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Game Success!");
             SwitchState(GameStatus.Paused);
-            GlobalManager.Instance.GameLevel++;
+            if(GlobalManager.Instance.GameLevel < dataLevel.array.Count)
+                GlobalManager.Instance.GameLevel++;
             EventCtrl.SendEvent(EventDefine.OnGameLevelUp);
 
             player.transform.DOScale(0, 0.6f).OnComplete(() =>
@@ -221,6 +221,8 @@ public class GameManager : MonoBehaviour
         if (!go) return;
         go.transform.position = enemy.transform.position;
     }
+    
+    public int TotalLevelCnt => dataLevel.array.Count;
 
     public DataLevel.Level GetCurLevelData()
     {

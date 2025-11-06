@@ -9,7 +9,13 @@ public class UIWin : UIBase
     private Button btnAd;
     private Button btnNext;
     private Button btnBack;
-    
+
+    public override void Refresh()
+    {
+        var isNewChapter = GlobalManager.Instance.GameLevel % GlobalManager.ChapterLevelCnt == 1;
+        btnNext.gameObject.SetActive(!isNewChapter);
+    }
+
     public void _btnAdClick()
     {
         GameManager.Instance.SwitchState(GameStatus.Next);
