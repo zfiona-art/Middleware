@@ -217,5 +217,29 @@ public class ToolUtil
     {
         return UnityEngine.Random.Range(0,100) <= probability;
     }
+    
+    private static Vector3 CalculateCubicBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
+    {
+        var u = 1 - t;
+        var tt = t * t;
+        var uu = u * u;
+
+        var p = uu * p0;
+        p += 2 * u * t * p1;
+        p += tt * p2;
+
+        return p;
+    }
+    public static Vector3[] GetBezierList(Vector3 startPoint, Vector3 controlPoint, Vector3 endPoint, int segmentNum=5)
+    {
+        Vector3[] path = new Vector3[segmentNum];
+        for (int i = 1; i <= segmentNum; i++)
+        {
+            var t = i / (float)segmentNum;
+            var pixel = CalculateCubicBezierPoint(t, startPoint, controlPoint, endPoint);
+            path[i - 1] = pixel;
+        }
+        return path;
+    }
 }
 

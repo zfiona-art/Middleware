@@ -17,7 +17,8 @@ public class Enemy2 : Enemy
                 isFiring = false;
                 return;
             }
-            TryFire();
+            if(IsActive)
+                TryFire();
         }
         else
         {
@@ -48,7 +49,7 @@ public class Enemy2 : Enemy
         
         var dir = (target.position - rigid.position).normalized;
         var bullet = PoolManager.Instance.Get<Weapon>("enemy2_weapon",GameManager.Instance.rootBullets);
-        bullet.transform.position = transform.position; 
+        bullet.transform.position = transform.Find("shoot").position; 
         bullet.transform.rotation = Quaternion.FromToRotation(Vector3.up, dir); 
         bullet.GetComponent<Rigidbody2D>().velocity = dir * data.fireSpeed;
         bullet.damage = GetDamage();

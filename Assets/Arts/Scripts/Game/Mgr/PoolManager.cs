@@ -7,15 +7,17 @@ using Object = UnityEngine.Object;
 
 public class PoolItem : MonoBehaviour
 {
-   
+    [HideInInspector] public bool isActive;
     public virtual void OnSpawn()
     {
         gameObject.SetActive(true);
+        isActive = true;
     }
 
     public virtual void OnDespawn()
     {
         gameObject.SetActive(false);
+        isActive = false;
     }
     
 }
@@ -42,7 +44,7 @@ public class PoolManager : Singleton<PoolManager>
         {
             foreach (var o in pools[pName])
             {
-                if (!o.gameObject.activeSelf)
+                if (!o.isActive)
                 {
                     item = o as T;
                     break;

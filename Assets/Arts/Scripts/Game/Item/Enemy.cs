@@ -93,7 +93,7 @@ public class Enemy : PoolItem
         {
             var weapon = collision.GetComponentInParent<Weapon>();
             health -= weapon.damage;
-            PoolManager.Instance.Dispose(weapon);
+            weapon.OnHarmOver(collision);
         }
         else
         {

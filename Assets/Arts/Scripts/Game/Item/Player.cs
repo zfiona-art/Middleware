@@ -15,7 +15,7 @@ public class Player : PoolItem
     private Animator animator;
     private SpriteRenderer hp;
     private Transform dirTr;
-    private Weapon weapon2;
+    private Weapon2 weapon2;
     private DataPlayer data;
     private readonly int fireHash = Animator.StringToHash("fire");
     private readonly int liveHash = Animator.StringToHash("live");
@@ -60,27 +60,11 @@ public class Player : PoolItem
         vp_Timer.In(interval, Fire,0,interval,bSpawnHandle);
     }
     
-    public void ResetWeapon2()
-    {
-        if (weapon2 == null)
-        {
-            weapon2 = PoolManager.Instance.Get<Weapon>("weapon2", transform);
-            weapon2.transform.localPosition = Vector3.zero;
-        }
-        var maxCnt = Mathf.Min(4, UpgradeManager.Instance.addition.cCount);
-        var perAngle = 360f / maxCnt;
-        for (var i = 0; i < weapon2.transform.childCount; i++)
-        {
-            var child = weapon2.transform.GetChild(i);
-            child.localEulerAngles = perAngle * i * Vector3.forward;
-            child.gameObject.SetActive(i < maxCnt);
-        }
-        weapon2.damage = GetWeaponDamage(2);
-    }
-    
     void Update()
     {
         if(GameManager.Instance.status != GameStatus.Playing) return;
+        if(!animator.GetBool(liveHash)) return;
+        
         var dir = Joystick.Instance.Direction;
         if (dir != Vector2.zero)
         {
@@ -93,13 +77,13 @@ public class Player : PoolItem
             movement.y = Input.GetAxisRaw("Vertical");
         }
         
-        SetAnimation();
-        SetWeapon();
+        var result = Physics2D.CircleCast(transform.position, GetDistance(), Vector2.zero,0, LayerMask.GetMask("Enemy"));
+        animator.SetBool(fireHash, result);
     }
 
     private void FixedUpdate()
     {
-        if(movement == Vector2.zero) return;
+        if (movement == Vector2.zero) return;
         if (GameManager.Instance.status != GameStatus.Playing)
         {
             rb.velocity = Vector3.zero;
@@ -110,22 +94,11 @@ public class Player : PoolItem
         rb.MovePosition(rb.position + speed * Time.fixedDeltaTime * movement);
     }
 
-    private float GetDistance()
+    public float GetDistance()
     {
         return data.bulletDistance * (1 + UpgradeManager.Instance.addition.bDistance * 0.01f);
     }
-    private void SetAnimation()
-    {
-        if(!animator.GetBool(liveHash)) return;
-        var result = Physics2D.CircleCast(transform.position, GetDistance(), Vector2.zero,0, LayerMask.GetMask("Enemy"));
-        animator.SetBool(fireHash, result);
-    }
-
-    private void SetWeapon()
-    {
-        if(weapon2 && weapon2.gameObject.activeSelf)
-            weapon2.transform.Rotate(Vector3.back, data.circleSpeed * Time.deltaTime);
-    }
+    
 
     private float GetWeaponDamage(int id)
     {
@@ -136,8 +109,7 @@ public class Player : PoolItem
     // 发射子弹
     private void Fire()
     {
-        if (GameManager.Instance.status != GameStatus.Playing)
-            return;
+        if (GameManager.Instance.status != GameStatus.Playing) return;
         
         var results = Physics2D.CircleCastAll(transform.position, 100, Vector2.zero,0, LayerMask.GetMask("Enemy"));
         //获取最近的怪
@@ -224,12 +196,38 @@ public class Player : PoolItem
         
         if (collision.CompareTag("EnemyWeapon"))
         {
-            BeHarmed(collision.GetComponent<Weapon>().damage);
-            PoolManager.Instance.Dispose(collision.GetComponent<Weapon>());
+            var weapon = collision.GetComponent<Weapon>();
+            BeHarmed(weapon.damage);
+            weapon.OnHarmOver(collision);
         }
     }
-    
 
+    public void RefreshWeapon2()
+    {
+        if (weapon2 == null)
+        {
+            weapon2 = PoolManager.Instance.Get<Weapon2>("weapon2", transform);
+            weapon2.transform.localPosition = Vector3.zero;
+            weapon2.Init(GetWeaponDamage(2),data.circleSpeed);
+        }
+        weapon2.Refresh();
+    }
+    
+    public void DisplaySkill(int id)
+    {
+        Debug.Log("DisplaySkill: " + id);
+        if(id == 3)
+            Skill3.GenerateCnt += 3;
+        TryGenSkill(id);
+    }
+
+    private void TryGenSkill(int id)
+    {
+        var skill = PoolManager.Instance.Get<Weapon>("skill" + id, GameManager.Instance.rootSkills);
+        skill.damage = data.skillDamages[id - 1];
+        skill.transform.position = transform.position;
+    }
+    
     // private void OnTriggerExit2D(Collider2D collision)
     // {
     //     if (collision.CompareTag("Ground"))

@@ -14,9 +14,7 @@ public class UIGame : UIBase
     private Slider slideSchedule;
     private Text txtSchedule;
     private Text txtGameLevel;
-    private Button btnSkill1;
-    private Button btnSkill2;
-    private Button btnSkill3;
+    private Transform rootSkill;
 
     private readonly vp_Timer.Handle timerHandle = new ();
     private int curLeftTime;
@@ -27,6 +25,8 @@ public class UIGame : UIBase
         EventCtrl.RegisterAction(EventDefine.OnEnemyKill,OnEnemyKill);
         EventCtrl.RegisterAction(EventDefine.OnEnergyGet,OnEnergyGet);
         EventCtrl.RegisterAction(EventDefine.OnGameLevelUp,OnGameLevelUp);
+        EventCtrl.RegisterAction(EventDefine.OnSkillGet,OnSkillGet);
+        EventCtrl.RegisterAction(EventDefine.OnDoubleClick,OnDoubleClick);
         btnSet.onClick.AddListener(OnBtnSetClick);
     }
 
@@ -65,19 +65,22 @@ public class UIGame : UIBase
         GameManager.Instance.SwitchState(s);
     }
 
-    private void OnBtnSkill1Click()
+    private void OnSkillGet(object data)
     {
+        var evtData = (EvtData)data;
+        if (evtData == null) return;
         
+        var id = evtData.GetData<int>();
+        var go = Resources.Load<ItemSkill>("Prefab/UI/item_Skill");
+        Instantiate(go, rootSkill).SetSkill(id);
     }
-    private void OnBtnSkill2Click()
+
+    private void OnDoubleClick(object data)
     {
-        
+        if(rootSkill.childCount == 0) return;
+        var skill = rootSkill.GetChild(0).GetComponent<ItemSkill>();
+        skill?.OnBtnClick();
     }
-    private void OnBtnSkill3Click()
-    {
-        
-    }
-    
     
     private void OnEnemyKill(object data)
     {

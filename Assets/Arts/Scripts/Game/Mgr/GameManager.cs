@@ -14,8 +14,9 @@ public class GameManager : MonoBehaviour
     public Transform rootGrounds; //地板根节点
     public Transform rootProps; //道具根节点
     public Transform rootEnemies;//敌人根节点
-    public Transform rootBullets;//子弹根节点
     public Transform rootEnergies;//能量根节点
+    public Transform rootBullets;//子弹根节点
+    public Transform rootSkills; //技能根节点
     //地板部分
     [SerializeField] private int curPropNum;
     //敌人部分

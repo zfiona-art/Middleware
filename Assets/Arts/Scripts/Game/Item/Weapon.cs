@@ -7,8 +7,20 @@ using UnityEngine;
 public class Weapon : PoolItem
 {
     public float damage;
+    protected virtual bool AutoDispose => true;
 
+    public virtual void OnHarmOver(Collider2D c)
+    {
+        Dispose();
+    }
+    
     private void OnBecameInvisible()
+    {
+        if(AutoDispose)
+            Dispose();
+    }
+
+    public void Dispose()
     {
         PoolManager.Instance.Dispose(this);
     }

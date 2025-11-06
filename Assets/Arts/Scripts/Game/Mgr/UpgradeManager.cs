@@ -24,6 +24,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             {EUpgradeItem.BulletDamage,10},
             {EUpgradeItem.CircleCount,4},
             {EUpgradeItem.CircleDamage,10},
+            {EUpgradeItem.Skill1,2},
+            {EUpgradeItem.Skill2,2},
+            {EUpgradeItem.Skill3,2},
         };
         addition = new Addition();
     }
@@ -75,6 +78,15 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.CircleDamage:
                 describe = $"尖叫鸡伤害加成: {addition.cDamage} -> {addition.cDamage + 3}";
                 break;
+            case EUpgradeItem.Skill1:
+                describe = "得到1个旋风技能";
+                break;
+            case EUpgradeItem.Skill2:
+                describe = "得到1个火球技能";
+                break;
+            case EUpgradeItem.Skill3:
+                describe = "得到1个地刺技能";
+                break;
         }
         return describe;
     }
@@ -103,10 +115,19 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 break;
             case EUpgradeItem.CircleCount:
                 addition.cCount += 1;
-                GameManager.Instance.player.ResetWeapon2();
+                GameManager.Instance.player.RefreshWeapon2();
                 break;
             case EUpgradeItem.CircleDamage:
                 addition.cDamage += 3;
+                break;
+            case EUpgradeItem.Skill1:
+                EventCtrl.SendEvent(EventDefine.OnSkillGet,1);
+                break;
+            case EUpgradeItem.Skill2:
+                EventCtrl.SendEvent(EventDefine.OnSkillGet,2);
+                break;
+            case EUpgradeItem.Skill3:
+                EventCtrl.SendEvent(EventDefine.OnSkillGet,3);
                 break;
         }
         upgradeDic[item]--;
@@ -123,6 +144,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
         BulletDamage,
         CircleCount,
         CircleDamage,
+        Skill1,
+        Skill2,
+        Skill3,
     }
     
     public class Addition

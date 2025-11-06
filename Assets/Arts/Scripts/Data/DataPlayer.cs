@@ -18,4 +18,5 @@ public class DataPlayer : ScriptableObject
     public float circleDamage;//旋转伤害
     
     public List<int> levelUpExps = new ();//升级所需能量
+    public List<int> skillDamages = new();
 }

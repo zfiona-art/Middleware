@@ -10,8 +10,10 @@ public class Joystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointer
     public float sensitivity = 1;
     private Vector2 curPosition;
     private Vector2 curDirection;
+    private const float DoubleClickInterval = 0.2f;
+    private float lastClickTime;
+    
     public static Joystick Instance;
-
     void Start()
     {
         Instance = this;
@@ -30,6 +32,12 @@ public class Joystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointer
     
     public virtual void OnPointerDown(PointerEventData eventData)
     {
+        if (Time.realtimeSinceStartup - lastClickTime < DoubleClickInterval)
+        {
+            EventCtrl.SendEvent(EventDefine.OnDoubleClick);
+            return;
+        }
+        lastClickTime = Time.realtimeSinceStartup;
         //重置位置
         background.gameObject.SetActive(true);
         background.position = eventData.position;
