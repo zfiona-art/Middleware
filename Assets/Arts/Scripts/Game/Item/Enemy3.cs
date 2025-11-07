@@ -61,10 +61,10 @@ public class Enemy3 : Enemy
         var rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = data.fireSpeed * Vector3.up;
         
-        vp_Timer.In(0.8f, () =>
+        vp_Timer.In(1f, () =>
         {
             bullet.transform.position = warn.transform.position + Vector3.up * 10;
-            rb.velocity = data.fireSpeed * 1.8f * Vector3.down;
+            rb.velocity = data.fireSpeed * 1.2f * Vector3.down;
         });
     }
 }

@@ -6,9 +6,8 @@ public class DataPlayer : ScriptableObject
 {
     public float health;
     public float moveSpeed;
-
+    public float FireSpeed;
     public float bulletDistance;//射击距离
-    public float bulletInterval;//射击间隔
     public float bulletSpeed;//飞行速度
     public float bulletDamage;//子弹伤害
 

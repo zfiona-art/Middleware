@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemSkill : PoolItem
+public class ItemSkill : MonoBehaviour
 {
     public int id;
     private Button btn;

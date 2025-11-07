@@ -197,8 +197,8 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Game Success!");
             SwitchState(GameStatus.Paused);
-            if(GlobalManager.Instance.GameLevel < dataLevel.array.Count)
-                GlobalManager.Instance.GameLevel++;
+            GlobalManager.Instance.SetLevelStar(player.star);
+            GlobalManager.Instance.GameLevel = Math.Min(dataLevel.array.Count, GlobalManager.Instance.GameLevel + 1);
             EventCtrl.SendEvent(EventDefine.OnGameLevelUp);
 
             player.transform.DOScale(0, 0.6f).OnComplete(() =>

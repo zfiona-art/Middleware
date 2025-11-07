@@ -10,6 +10,8 @@ public class Player : PoolItem
     private bool isInvincible;//无敌状态
     
     public readonly vp_Timer.Handle bSpawnHandle = new ();
+    public int level;
+    public int star;
     private Vector2 movement;
     private Rigidbody2D rb;
     private Animator animator;
@@ -17,6 +19,7 @@ public class Player : PoolItem
     private Transform dirTr;
     private Weapon2 weapon2;
     private DataPlayer data;
+    private Addition addition;
     private readonly int fireHash = Animator.StringToHash("fire");
     private readonly int liveHash = Animator.StringToHash("live");
     
@@ -36,8 +39,10 @@ public class Player : PoolItem
         ResetHealth();
         ResetFire();
         energyCnt = 0;
-        GlobalManager.PlayerLevel = 1;
+        level = 1;
+        star = 3;
         weapon2?.gameObject.SetActive(false);
+        addition = GlobalManager.Instance.GetPlayerAdd();
     }
 
     public void SetSuperTime()
@@ -49,14 +54,15 @@ public class Player : PoolItem
     public void ResetHealth()
     {
         animator.SetBool(liveHash, true);
-        health = data.health * (1 + UpgradeManager.Instance.addition.maxHealth * 0.01f);
+        health = data.health + addition.maxHealth + UpgradeManager.Instance.addition.maxHealth;
         hp.size = new Vector2(health / data.health, 1);
     }
 
     public void ResetFire()
     {
         bSpawnHandle.Cancel();
-        var interval = data.bulletInterval * (1 - UpgradeManager.Instance.addition.bInterval * 0.01f);
+        var speed = data.FireSpeed + addition.fireSpeed + UpgradeManager.Instance.addition.fireSpeed;
+        var interval = Math.Max(0.1f, (10 - speed) / 10);
         vp_Timer.In(interval, Fire,0,interval,bSpawnHandle);
     }
     
@@ -90,20 +96,20 @@ public class Player : PoolItem
             return;
         }
 
-        var speed = data.moveSpeed * (1 + UpgradeManager.Instance.addition.moveSpeed * 0.01f);
+        var speed = data.moveSpeed + addition.moveSpeed + UpgradeManager.Instance.addition.moveSpeed;
         rb.MovePosition(rb.position + speed * Time.fixedDeltaTime * movement);
     }
 
     public float GetDistance()
     {
-        return data.bulletDistance * (1 + UpgradeManager.Instance.addition.bDistance * 0.01f);
+        return data.bulletDistance + UpgradeManager.Instance.addition.bDistance;
     }
     
 
     private float GetWeaponDamage(int id)
     {
-        return id == 1 ? data.bulletDamage * (1 + UpgradeManager.Instance.addition.bDamage) 
-            : data.circleDamage * (1 + UpgradeManager.Instance.addition.cDamage);
+        return id == 1 ? data.bulletDamage + addition.bDamage + UpgradeManager.Instance.addition.bDamage 
+            : data.circleDamage + addition.cDamage + UpgradeManager.Instance.addition.cDamage;
     }
     
     // 发射子弹
@@ -150,6 +156,7 @@ public class Player : PoolItem
         hp.size = new Vector2(health / data.health, 1);
         if (health == 0)
         {
+            star = Math.Max(1, star - 1);
             animator.SetBool(liveHash, false);
             GameManager.Instance.SwitchState(GameStatus.Paused);
             vp_Timer.In(1.2f, () =>
@@ -161,7 +168,7 @@ public class Player : PoolItem
 
     public float GetEnergyPro()
     {
-        var index = Mathf.Min(GlobalManager.PlayerLevel - 1, data.levelUpExps.Count - 1);
+        var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
         return 1f * energyCnt / data.levelUpExps[index];
     }
 
@@ -172,11 +179,11 @@ public class Player : PoolItem
         {
             PoolManager.Instance.Dispose(collision.GetComponent<Energy>());
             energyCnt++;
-            var index = Mathf.Min(GlobalManager.PlayerLevel - 1, data.levelUpExps.Count - 1);
+            var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
             if (energyCnt == data.levelUpExps[index]) //升级
             {
                 energyCnt = 0;
-                GlobalManager.PlayerLevel++;
+                level++;
                 GameManager.Instance.SwitchState(GameStatus.Paused);
                 UIManager.Instance.OpenPanel(UIPath.upgrade);
             }

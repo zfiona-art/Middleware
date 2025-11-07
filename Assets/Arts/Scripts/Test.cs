@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using Newtonsoft.Json;
 
 public class Test : MonoBehaviour
 {
@@ -38,9 +39,13 @@ public class Test : MonoBehaviour
 
     void Start()
     {
-        // ListNode head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4))));
-        // head = ReverseList(head);
-        // Debug.Log(head.val);
+        var list = new List<int>();
+        list.Add(1);
+        list.Add(2);
+        var json = JsonConvert.SerializeObject(list);
+        Debug.Log($"{json}");
+        var data = JsonConvert.DeserializeObject<List<int>>(json);
+        Debug.Log(data.Count);
         
         
     }

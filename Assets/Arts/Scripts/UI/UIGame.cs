@@ -71,7 +71,7 @@ public class UIGame : UIBase
         if (evtData == null) return;
         
         var id = evtData.GetData<int>();
-        var go = Resources.Load<ItemSkill>("Prefab/UI/item_Skill");
+        var go = Resources.Load<ItemSkill>("Prefab/UI/item_skill");
         Instantiate(go, rootSkill).SetSkill(id);
     }
 
@@ -91,9 +91,16 @@ public class UIGame : UIBase
     
     private void OnEnergyGet(object data)
     {
-        var val = GameManager.Instance.player ? GameManager.Instance.player.GetEnergyPro() : 0;
-        slideExp.value = val;
-        txtLevel.text = GlobalManager.PlayerLevel.ToString();
+        if (GameManager.Instance.player)
+        {
+            slideExp.value = GameManager.Instance.player.GetEnergyPro();
+            txtLevel.text = GameManager.Instance.player.level.ToString();
+        }
+        else
+        {
+            slideExp.value = 0;
+            txtLevel.text = "1";
+        }
     }
     
     private void OnGameLevelUp(object data)
