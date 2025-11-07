@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
         var panelCnt = GetCurLevelData().groundCnt;
         //生成地图
         var data = Resources.Load<DataGame>("Data/Game");
+        var data2 = Resources.Load<DataChapter>("Data/Chapter");
         var ground = Resources.Load<Ground>("Prefab/Game/ground");
         var point = new Vector2(0, data.panelWidth * (panelCnt + 1) * 0.5f);
         for (var i = 0; i < panelCnt; i++)
@@ -66,10 +67,11 @@ public class GameManager : MonoBehaviour
                 point.x -= data.panelWidth;
                 var go = Instantiate(ground, rootGrounds);
                 go.transform.position = point;
+                go.Init(data2, data.groundPropCnt);
             }
         }
         //生成边界
-        var tree = Resources.Load<Prop>("Prefab/Game/tree1");
+        var tree = Resources.Load<Prop>("Prefab/Game/prop");
         tree.gameObject.layer = LayerMask.NameToLayer("Default");
         var treeDis = data.panelWidth / dataGame.boundTreeCnt;
         var cnt = panelCnt * treeCnt;
@@ -78,14 +80,14 @@ public class GameManager : MonoBehaviour
         for (var i = 0; i < cnt; i++)
         {
             point.y -= treeDis;
-            var go = Instantiate(tree, rootProps);
+            var go = Instantiate(tree, rootGrounds);
             go.transform.position = point;
         }
         point = new Vector2(-data.panelWidth * panelCnt * 0.5f, data.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f);
         for (var i = 0; i < cnt; i++)
         {
             point.y -= treeDis;
-            var go = Instantiate(tree, rootProps);
+            var go = Instantiate(tree, rootGrounds);
             go.transform.position = point;
         }
         //横向
@@ -93,14 +95,14 @@ public class GameManager : MonoBehaviour
         for (var i = 0; i < cnt; i++)
         {
             point.x -= treeDis;
-            var go = Instantiate(tree, rootProps);
+            var go = Instantiate(tree, rootGrounds);
             go.transform.position = point;
         }
         point = new Vector2(data.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f,-data.panelWidth * panelCnt * 0.5f);
         for (var i = 0; i < cnt; i++)
         {
             point.x -= treeDis;
-            var go = Instantiate(tree, rootProps);
+            var go = Instantiate(tree, rootGrounds);
             go.transform.position = point;
         }
     }
@@ -167,17 +169,6 @@ public class GameManager : MonoBehaviour
         player.transform.localPosition = Vector3.zero;
         player.transform.localScale = Vector3.zero;
         player.transform.DOScale(1, 0.5f).OnComplete(() => SwitchState(GameStatus.Playing));
-    }
-    
-    public void TryGenProps(Ground ground)
-    {
-        if(curPropNum >= dataGame.maxPropNum) return;
-        ground.TryGenProps(); 
-    }
-
-    public void AddPropNum(int num)
-    {
-        curPropNum += num;
     }
 
     private void TryGenEnemy()

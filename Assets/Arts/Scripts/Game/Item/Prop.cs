@@ -1,18 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Prop : PoolItem
 {
-    // Start is called before the first frame update
-    void Start()
+    private SpriteRenderer render;
+    private BoxCollider2D coll;
+    private void Awake()
     {
-        
+        render = GetComponent<SpriteRenderer>();
+        coll = GetComponent<BoxCollider2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Init(DataChapter.PropData d)
     {
-        
+        name = d.sprite.name;
+        render.sortingOrder = d.layer;
+        render.sprite = d.sprite;
+        coll.isTrigger = !d.isBlock;
     }
 }

@@ -168,12 +168,6 @@ public class Player : PoolItem
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Trigger: " + collision.tag);
-        if (collision.CompareTag("Ground"))
-        {
-            var ground = collision.GetComponent<Ground>();
-            GameManager.Instance.TryGenProps(ground);
-        }
-        
         if (collision.transform.CompareTag("Energy"))
         {
             PoolManager.Instance.Dispose(collision.GetComponent<Energy>());

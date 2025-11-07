@@ -6,8 +6,8 @@ using UnityEngine;
 public class DataGame : ScriptableObject
 {
     public int maxTimeSeconds;
-    public int maxPropNum;
     public float enemyInterval;
     public float panelWidth;
     public int boundTreeCnt;
+    public int groundPropCnt;
 }
