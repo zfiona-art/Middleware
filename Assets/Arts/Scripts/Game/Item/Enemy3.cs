@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Enemy3 : Enemy
 {
-    private bool isFiring;
     private float curCdTime;
 
     public override void OnSpawn()
@@ -31,8 +30,7 @@ public class Enemy3 : Enemy
         {
             if (distance < data.fireDistance)
             {
-                StopRun();
-                isFiring = true;
+                DoAttack();
                 return;
             }
             base.DoLoop();

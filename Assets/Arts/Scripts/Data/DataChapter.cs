@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Chapter", menuName = "Data/Chapter", order = 5)]
 public class DataChapter : ScriptableObject
@@ -19,6 +20,6 @@ public class DataChapter : ScriptableObject
     {
         public Sprite sprite;
         public bool isBlock;
-        public int layer;
+        public int sort;
     }
 }

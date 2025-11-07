@@ -16,7 +16,7 @@ public class Prop : PoolItem
     public void Init(DataChapter.PropData d)
     {
         name = d.sprite.name;
-        render.sortingOrder = d.layer;
+        render.sortingOrder = d.sort;
         render.sprite = d.sprite;
         coll.isTrigger = !d.isBlock;
     }

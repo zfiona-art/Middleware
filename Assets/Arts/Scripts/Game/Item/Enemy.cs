@@ -12,11 +12,13 @@ public class Enemy : PoolItem
     private Animator animator;
     protected Rigidbody2D rigid; 
     protected Rigidbody2D target;
+    protected bool isFiring;
     
     private readonly int runHash = Animator.StringToHash("run");
     private readonly int harmHash = Animator.StringToHash("harm");
     private Vector3 direction;
     private float attackTime;
+    
     
     private void Awake()
     {
@@ -30,25 +32,25 @@ public class Enemy : PoolItem
         base.OnSpawn();
         health = data.health + GameManager.Instance.GetCurLevelData().healthAdd;
         animator.SetBool(runHash,false);
+        isFiring = false;
     }
 
-    protected void StopRun()
+    protected void DoAttack()
     {
         animator.SetBool(runHash, false);
         rigid.velocity = Vector3.zero;
+        isFiring = true;
     }
 
     protected virtual void DoLoop()
     {
         if (!animator.GetBool(runHash))
         {
-            var distance = Vector2.Distance(rigid.position, target.position);
-            if (IsActive || distance < data.lookDistance)
+            if (IsActive || Vector2.Distance(rigid.position, target.position) < data.lookDistance)
             {
                 animator.SetBool(runHash,true);
                 IsActive = true;
             }
-            return;
         }
         // 方向
         direction.x = target.position.x < rigid.position.x ? 1 : -1;
