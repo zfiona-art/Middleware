@@ -27,15 +27,27 @@ public class UIShop : UIBase
 
     public void _btnBox1Click()
     {
-        var cnt = Random.Range(10, 50);
-        GlobalManager.Instance.Coin += cnt;
-        _btnCloseClick();
+        SdkManager.Instance.ShowAd((isSuc, count) =>
+        {
+            if (isSuc)
+            {
+                var cnt = Random.Range(10, 50);
+                GlobalManager.Instance.Coin += cnt;
+                _btnCloseClick();
+            }
+        });
     }
     public void _btnBox2Click()
     {
-        var cnt = Random.Range(1, 10);
-        GlobalManager.Instance.Diamond += cnt;
-        _btnCloseClick();
+        SdkManager.Instance.ShowAd((isSuc, count) =>
+        {
+            if (isSuc)
+            {
+                var cnt = Random.Range(1, 10);
+                GlobalManager.Instance.Diamond += cnt;
+                _btnCloseClick();
+            }
+        });
     }
 
     private void ShowTips()

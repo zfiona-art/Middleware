@@ -13,6 +13,7 @@ public class UIMain : UIBase
     private Button btnRank;
     private Button btnSign;
     private Button btnShop;
+    private Button btnDou;
     
     private Image imgHead;
     private Text txtName;
@@ -129,5 +130,17 @@ public class UIMain : UIBase
     public void _btnRankClick()
     {
         UIManager.Instance.OpenPanel(UIPath.rank);
+    }
+
+    public void _btnDouClick()
+    {
+        SdkManager.Instance.Login(LoginAction);
+    }
+
+    private void LoginAction(bool success,string url, string nickName)
+    {
+        if(!success) return;
+        txtName.text = nickName;
+        HttpImage.AsyncLoadWithoutCache(url, s => imgHead.sprite = s);
     }
 }

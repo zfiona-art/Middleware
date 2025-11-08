@@ -28,8 +28,14 @@ public class UIRevival : UIBase
     
     public void _btnAdClick()
     {
-        GameManager.Instance.SwitchState(GameStatus.SuperRevival);
-        UIManager.Instance.CloseTopPanel(); 
+        SdkManager.Instance.ShowAd((isSuc, count) =>
+        {
+            if (isSuc)
+            {
+                GameManager.Instance.SwitchState(GameStatus.SuperRevival);
+                UIManager.Instance.CloseTopPanel(); 
+            }
+        });
     }
 
     public void _btnRestartClick()

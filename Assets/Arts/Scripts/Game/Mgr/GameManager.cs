@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
         dataGame = Resources.Load<DataGame>("Data/Game");
         dataLevel = Resources.Load<DataLevel>("Data/Level");
         
+        SdkManager.Instance.Init();
         PoolManager.Instance.Init();
         UpgradeManager.Instance.Init();
         UIManager.Instance.OpenPanel(UIPath.loading);
@@ -219,6 +221,11 @@ public class GameManager : MonoBehaviour
     public DataLevel.Level GetCurLevelData()
     {
         return dataLevel.array[GlobalManager.Instance.GameLevel - 1];
+    }
+    
+    public Coroutine StartRequestDirect(IEnumerator http)
+    {
+        return StartCoroutine(http);
     }
 }
 
