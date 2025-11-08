@@ -206,12 +206,21 @@ public class ToolUtil
         return dt;
     }
 
-    // 【秒级】生成10位时间戳（北京时间）
-    public static long GetTimeStamp(DateTime dt)
+    /// <summary>
+    /// 获取Unix时间戳（秒）
+    /// </summary>
+    public static long GetTimestampSeconds()
     {
-        DateTime dateStart = new DateTime(1970, 1, 1, 8, 0, 0);
-        return Convert.ToInt64((dt - dateStart).TotalSeconds);
+        TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        return Convert.ToInt64(ts.TotalSeconds);
     }
+
+    public static long GetTodayStampSeconds()
+    {
+        TimeSpan ts = DateTime.Today - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        return Convert.ToInt64(ts.TotalSeconds);
+    }
+    
 
     public static bool IsProbabilityOk(int probability)
     {

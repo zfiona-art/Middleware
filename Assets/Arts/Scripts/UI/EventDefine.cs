@@ -6,4 +6,5 @@ public class EventDefine
     public const string OnGameLevelUp = "OnGameLevelUp";
     public const string OnSkillGet = "OnSkillGet";
     public const string OnDoubleClick = "OnDoubleClick";
+    public const string OnCoinModify = "OnCoinModify";
 }

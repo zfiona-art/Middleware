@@ -28,6 +28,12 @@ public class UpgradeManager : Singleton<UpgradeManager>
             {EUpgradeItem.Skill3,2},
         };
         addition = new Addition();
+        if (GlobalManager.Instance.GameLevel == 1)
+        {
+            addition.maxHealth = 1;
+            addition.moveSpeed = 1;
+            addition.fireSpeed = 1;
+        }
     }
 
     public List<EUpgradeItem> GetItems()
@@ -54,25 +60,25 @@ public class UpgradeManager : Singleton<UpgradeManager>
         switch (item)
         {
             case EUpgradeItem.MaxHealth:
-                describe = $"生命值+1，并恢复到最大生命值";
+                describe = $"生命值: +1";
                 break;
             case EUpgradeItem.MoveSpeed:
-                describe = $"移动速度: {addition.moveSpeed} -> {addition.moveSpeed + 1}";
+                describe = $"移动速度: +1";
                 break;
             case EUpgradeItem.FireSpeed:
-                describe = $"攻击速度: {addition.fireSpeed} -> {addition.fireSpeed + 1}";
+                describe = $"攻击速度: +1";
                 break;
             case EUpgradeItem.BulletDistance:
-                describe = $"攻击距离: {addition.bDistance} -> {addition.bDistance + 1}";
+                describe = $"攻击距离: +1";
                 break;
             case EUpgradeItem.BulletDamage:
-                describe = $"篮球伤害: {addition.bDamage} -> {addition.bDamage + 1}";
+                describe = $"篮球伤害: +1";
                 break;
             case EUpgradeItem.CircleCount:
-                describe = $"尖叫鸡数量: {addition.cCount + 0} -> {addition.cCount + 1}";
+                describe = $"尖叫鸡数量: +1";
                 break;
             case EUpgradeItem.CircleDamage:
-                describe = $"尖叫鸡伤害: {addition.cDamage} -> {addition.cDamage + 1}";
+                describe = $"尖叫鸡伤害: +1";
                 break;
             case EUpgradeItem.Skill1:
                 describe = "得到1个旋风技能";

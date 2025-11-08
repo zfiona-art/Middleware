@@ -149,6 +149,7 @@ public class GameManager : MonoBehaviour
                 rootEnemies.gameObject.DestroyAllChild();
                 rootEnergies.gameObject.DestroyAllChild();
                 rootBullets.gameObject.DestroyAllChild();
+                rootSkills.gameObject.DestroyAllChild();
                 break;
             case GameStatus.Next:
                 SwitchState(GameStatus.End);

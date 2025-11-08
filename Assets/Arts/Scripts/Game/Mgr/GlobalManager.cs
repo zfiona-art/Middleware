@@ -20,6 +20,38 @@ public class GlobalManager : Singleton<GlobalManager>
         set => PlayerPrefs.SetInt("PlayerAvatar", value);
     }
 
+    public int Coin
+    {
+        get => PlayerPrefs.GetInt("PlayerCoin", 0);
+        set 
+        {
+            PlayerPrefs.SetInt("PlayerCoin", value);
+            EventCtrl.SendEvent(EventDefine.OnCoinModify);
+        }
+    }
+
+    public int Diamond
+    {
+        get => PlayerPrefs.GetInt("PlayerDiamond", 0);
+        set 
+        {
+            PlayerPrefs.SetInt("PlayerDiamond", value);
+            EventCtrl.SendEvent(EventDefine.OnCoinModify);
+        }
+    }
+
+    public int SignDay
+    {
+        get => PlayerPrefs.GetInt("PlayerSignDay", 0);
+        set => PlayerPrefs.SetInt("PlayerSignDay", value);
+    }
+
+    public int LastSignStamp
+    {
+        get => PlayerPrefs.GetInt("LastSignStamp", 0);
+        set => PlayerPrefs.SetInt("LastSignStamp", value);
+    }
+
     private string LevelStarCache
     {
         get => PlayerPrefs.GetString("LevelStarCache", null);

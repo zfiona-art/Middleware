@@ -36,13 +36,13 @@ public class Player : PoolItem
     {
         base.OnSpawn();
         
-        ResetHealth();
-        ResetFire();
+        addition = GlobalManager.Instance.GetPlayerAdd();
+        weapon2?.gameObject.SetActive(false);
         energyCnt = 0;
         level = 1;
         star = 3;
-        weapon2?.gameObject.SetActive(false);
-        addition = GlobalManager.Instance.GetPlayerAdd();
+        ResetHealth();
+        ResetFire();
     }
 
     public void SetSuperTime()

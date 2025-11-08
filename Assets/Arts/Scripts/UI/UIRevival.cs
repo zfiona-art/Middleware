@@ -9,8 +9,23 @@ public class UIRevival : UIBase
     private Button btnAd;
     private Button btnRestart;
     private Button btnBack;
-    
+    private Text txtCoin;
 
+    public override void OnPostAwake()
+    {
+        EventCtrl.RegisterAction(EventDefine.OnCoinModify, RefreshCoin);
+    }
+
+    public override void Refresh()
+    {
+        txtCoin.text = GlobalManager.Instance.Coin.ToString();
+    }
+
+    private void RefreshCoin(object data)
+    {
+        txtCoin.text = GlobalManager.Instance.Coin.ToString();
+    }
+    
     public void _btnAdClick()
     {
         GameManager.Instance.SwitchState(GameStatus.SuperRevival);
@@ -19,6 +34,12 @@ public class UIRevival : UIBase
 
     public void _btnRestartClick()
     {
+        if (GlobalManager.Instance.Coin < 100)
+        {
+            UIManager.Instance.OpenPanel(UIPath.shop);
+            return;
+        }
+        GlobalManager.Instance.Coin -= 100;
         GameManager.Instance.SwitchState(GameStatus.Revival);
         UIManager.Instance.ClosePanel(UIPath.revival);
     }
