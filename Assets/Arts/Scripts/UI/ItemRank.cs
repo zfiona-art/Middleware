@@ -9,12 +9,14 @@ public class ItemRank : MonoBehaviour
     private Image imgHead;
     private Text txtName;
     private Text txtScore;
+    private Text txtRank;
    
     private void Awake()
     {
         imgHead = transform.Find("head/img").GetComponent<Image>();
         txtName = transform.Find("txtName").GetComponent<Text>();
         txtScore = transform.Find("txtScore").GetComponent<Text>();
+        txtRank = transform.Find("txtRank").GetComponent<Text>();
     }
 
     public void SetValue(RankData data,int rank)
@@ -22,7 +24,7 @@ public class ItemRank : MonoBehaviour
         imgHead.sprite = Resources.Load<Sprite>("Image/Avatar/#" + data.id);
         txtName.text = data.name;
         txtScore.text = data.score.ToString();
-        if(rank > 3)
-            transform.Find("txtRank").GetComponent<Text>().text = rank.ToString();
+        txtRank.text = rank == 0 ? "暂未上榜" : rank.ToString();
     }
+    
 }

@@ -8,7 +8,8 @@ public class UIRank : UIBase
     private Button btnClose;
     private Transform ranks;
     private List<ItemRank> itemRanks = new ();
-
+    private List<RankData> rankData = new();
+    
     public override void OnPostAwake()
     {
         foreach (var item in ranks.GetComponentsInChildren<ItemRank>())
@@ -20,44 +21,61 @@ public class UIRank : UIBase
     public override void Refresh()
     {
         var data = GetRankData();
-        itemRanks[^1].SetValue(data[^1],0);
-        
+        foreach (var d in data)
+        {
+            if (d.isMine)
+            {
+                d.score = GetMyScore();
+                d.name = "游客" + GlobalManager.Instance.Avatar;
+            }
+        }
         data.Sort((x, y) =>
         {
             return -x.score.CompareTo(y.score);
         });
+        
+        var myRank = 0;
         for (var i = 0; i < itemRanks.Count -1; i++)
         {
             itemRanks[i].SetValue(data[i],i+1);
-            if(data[i].isMine)
-                itemRanks[^1].SetValue(data[i],i+1);
+            if (data[i].isMine)
+                myRank = i + 1;
         }
+
+        if (myRank == 0)
+            itemRanks[^1].SetValue(data[^1], 0);
+        else
+            itemRanks[^1].SetValue(data[myRank - 1], myRank);
+
     }
 
     private List<RankData> GetRankData()
     {
-        var data = new List<RankData>();
-        for (var i = 0; i < 50; i++)
+        if (rankData.Count == 0)
         {
-            var avatar = Random.Range(101, 111);
-            data.Add(new RankData()
+            rankData = new List<RankData>();
+            for (var i = 0; i < 10; i++)
             {
-                id = avatar,
-                name = "游客" + (avatar + 100),
-                score = Random.Range(0,3000)
+                var avatar = Random.Range(101, 111);
+                rankData.Add(new RankData()
+                {
+                    id = avatar,
+                    name = "游客" + (avatar + 100),
+                    score = Random.Range(0,3000)
+                });
+            }
+            rankData.Add(new RankData()
+            {
+                isMine = true,
+                score = GetMyScore(),
+                id = GlobalManager.Instance.Avatar,
+                name = "游客" + GlobalManager.Instance.Avatar
             });
         }
         
-        data.Add(new RankData()
-        {
-            id = GlobalManager.Instance.Avatar,
-            name = "游客" + GlobalManager.Instance.Avatar,
-            score = GetMyScore(),
-            isMine = true
-        });
-        return data;
+        return rankData;
     }
-
+    
     private int GetMyScore()
     {
         var myScore = GlobalManager.Instance.GameLevel * 100;
@@ -65,7 +83,7 @@ public class UIRank : UIBase
         myScore += add.maxHealth * 20 + add.moveSpeed * 10 + add.fireSpeed * 10 + add.bDamage * 5 + add.cDamage * 5;
         return myScore;
     }
-
+    
     public void _btnCloseClick()
     {
         UIManager.Instance.CloseTopPanel();

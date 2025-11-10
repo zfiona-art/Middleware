@@ -206,8 +206,10 @@ public class GameManager : MonoBehaviour
 
             player.transform.DOScale(0, 0.6f).OnComplete(() =>
             {
+                var isNewChapter = GlobalManager.Instance.GameLevel % GlobalManager.ChapterLevelCnt == 1;
+                isNewChapter |= dataLevel.array.Count == GlobalManager.Instance.GameLevel;
                 player.transform.position = Vector3.zero;
-                UIManager.Instance.OpenPanel(UIPath.win);
+                UIManager.Instance.OpenPanel(UIPath.win,isNewChapter);
             });
         }
         

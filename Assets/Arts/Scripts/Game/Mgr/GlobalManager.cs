@@ -12,7 +12,7 @@ public class GlobalManager : Singleton<GlobalManager>
         set => PlayerPrefs.SetInt("GameLevel", value);
     }
 
-    public int ChapterId => GameLevel / 10 + 1;
+    public int ChapterId => (GameLevel-1) / 10 + 1;
 
     public int Avatar
     {

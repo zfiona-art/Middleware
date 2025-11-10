@@ -59,9 +59,7 @@ public class UIGame : UIBase
     
     private void OnBtnSetClick()
     {
-        Debug.Log("打开设置面板，暂停游戏");
         timerHandle.Paused = !timerHandle.Paused;
-        
         GameManager.Instance.SwitchState(GameStatus.Paused);
         UIManager.Instance.OpenPanel(UIPath.setting);
     }

@@ -21,7 +21,6 @@ public class UISign : UIBase
     {
         var id = GlobalManager.Instance.SignDay;
         trItems.GetChild(id).GetComponent<ItemSign>().OnAdClick();
-        UIManager.Instance.CloseTopPanel();
     }
 
     public void _btnCloseClick()

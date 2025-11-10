@@ -17,8 +17,9 @@ public class UIWin : UIBase
 
     public override void Refresh()
     {
-        var isNewChapter = GlobalManager.Instance.GameLevel % GlobalManager.ChapterLevelCnt == 1;
+        var isNewChapter = (bool)trData;
         btnNext.gameObject.SetActive(!isNewChapter);
+        btnAd.gameObject.SetActive(!isNewChapter);
         CheckAddition();
     }
 

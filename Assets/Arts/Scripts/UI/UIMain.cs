@@ -14,7 +14,6 @@ public class UIMain : UIBase
     private Button btnSign;
     private Button btnShop;
     private Button btnDou;
-    private Button btnClean;
     
     private Image imgHead;
     private Text txtName;
@@ -29,11 +28,12 @@ public class UIMain : UIBase
     private Transform trChapter3;
     
     private DataLevel dataLevel;
-    private int curChapter;
+    private int CurChapter => GlobalManager.Instance.ChapterId;
 
     public override void OnPostAwake()
     {
         EventCtrl.RegisterAction(EventDefine.OnCoinModify,RefreshCoin);
+        EventCtrl.RegisterAction(EventDefine.OnLevelModify,RefreshLevel);
         var id = GlobalManager.Instance.Avatar;
         if (id == 0)
         {
@@ -46,7 +46,7 @@ public class UIMain : UIBase
         for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
         {
             var go = Resources.Load<GameObject>("Prefab/UI/item_level");
-            Instantiate(go, trLevels);
+            Instantiate(go, trLevels).GetComponent<ItemLevel>().Init(trLevels);
         }
         dataLevel = Resources.Load<DataLevel>("Data/Level");
     }
@@ -56,10 +56,9 @@ public class UIMain : UIBase
         txtCoin.text = GlobalManager.Instance.Coin.ToString();
         txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
         sliderLevel.value = 1f * GlobalManager.Instance.GameLevel / GameManager.Instance.TotalLevelCnt;
-        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GameManager.Instance.TotalLevelCnt}";
-        curChapter = GlobalManager.Instance.ChapterId;
-        UpdateChapter();
+        
         UpdateLevelStars();
+        UpdateChapter();
     }
 
     private void RefreshCoin(object data)
@@ -67,12 +66,17 @@ public class UIMain : UIBase
         txtCoin.text = GlobalManager.Instance.Coin.ToString();
         txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
     }
+    
+    private void RefreshLevel(object data)
+    {
+        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GameManager.Instance.TotalLevelCnt}";
+    }
 
     private void UpdateLevelStars()
     {
         var oriStars = GlobalManager.Instance.GetLevelStars();
         var newStars = new List<int>();
-        var count = GlobalManager.ChapterLevelCnt * (curChapter - 1);
+        var count = GlobalManager.ChapterLevelCnt * (CurChapter - 1);
         for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
         {
             if(count + i < oriStars.Count)
@@ -84,29 +88,30 @@ public class UIMain : UIBase
         {
             var cnt = i >= newStars.Count ? 0 : newStars[i];
             var go = trLevels.GetChild(i).GetComponent<ItemLevel>();
-            go.Init(i, cnt, trLevels);
+            go.Refresh(i, cnt, CurChapter);
         }
     }
 
     private void UpdateChapter()
     {
-        trChapter1.gameObject.SetActive(curChapter == 1);
-        trChapter2.gameObject.SetActive(curChapter == 2);
-        trChapter3.gameObject.SetActive(curChapter == 3);
+        trChapter1.gameObject.SetActive(CurChapter == 1);
+        trChapter2.gameObject.SetActive(CurChapter == 2);
+        trChapter3.gameObject.SetActive(CurChapter == 3);
+        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GameManager.Instance.TotalLevelCnt}";
     }
 
     public void _btnLeftClick()
     {
-        if(curChapter == 1) return;
-        curChapter --;
+        if(CurChapter == 1) return;
+        GlobalManager.Instance.GameLevel -= GlobalManager.ChapterLevelCnt;
         UpdateLevelStars();
         UpdateChapter();
     }
 
     public void _btnRightClick()
     {
-        if(curChapter == dataLevel.array.Count / GlobalManager.ChapterLevelCnt) return;
-        curChapter ++;
+        if(CurChapter == dataLevel.array.Count / GlobalManager.ChapterLevelCnt) return;
+        GlobalManager.Instance.GameLevel += GlobalManager.ChapterLevelCnt;
         UpdateLevelStars();
         UpdateChapter();
     }
@@ -143,10 +148,5 @@ public class UIMain : UIBase
         if(!success) return;
         txtName.text = nickName;
         HttpImage.AsyncLoadWithoutCache(url, s => imgHead.sprite = s);
-    }
-
-    public void _btnCleanClick()
-    {
-        PlayerPrefs.DeleteAll();
     }
 }
