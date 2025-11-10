@@ -43,12 +43,14 @@ public class Player : PoolItem
         star = 3;
         ResetHealth();
         ResetFire();
+        RefreshWeapon2();
     }
 
-    public void SetSuperTime()
+    public void SetSuperTime(float delay)
     {
         isInvincible = true;
-        vp_Timer.In(5, () => isInvincible = false);
+        if(delay > 0)
+            vp_Timer.In(delay, () => isInvincible = false);
     }
     
     public void ResetHealth()
@@ -152,6 +154,8 @@ public class Player : PoolItem
     public void BeHarmed(float damage)
     {
         if(isInvincible) return;
+        if(GameManager.Instance.status != GameStatus.Playing) return;
+        
         health = Mathf.Max(0, health - damage);
         hp.size = new Vector2(health / data.health, 1);
         if (health == 0)
@@ -200,6 +204,7 @@ public class Player : PoolItem
 
     public void RefreshWeapon2()
     {
+        if(GlobalManager.Instance.GetPlayerAdd().cCount == 0) return;
         if (weapon2 == null)
         {
             weapon2 = PoolManager.Instance.Get<Weapon2>("weapon2", transform);

@@ -10,7 +10,7 @@ public class ItemLevel : MonoBehaviour
     private Toggle tog2;
     private Toggle tog3;
     private Toggle togSelf;
-    private int curLevel;
+    private int curId;
 
     void Awake()
     {
@@ -27,21 +27,20 @@ public class ItemLevel : MonoBehaviour
         togSelf.onValueChanged.AddListener(OnSelfToggle);
     }
 
-    public void Refresh(int id,int star,int chapter)
+    public void Refresh(int id,int star,bool isOn)
     {
         text.text = (id + 1).ToString();
         tog1.isOn = star > 0;
         tog2.isOn = star > 1;
         tog3.isOn = star > 2;
         
-        curLevel = id + 1 + (chapter - 1) * GlobalManager.ChapterLevelCnt;
-        togSelf.isOn = GlobalManager.Instance.GameLevel == id + 1;
+        curId = id;
+        togSelf.isOn = isOn;
     }
 
     private void OnSelfToggle(bool isOn)
     {
         if(!isOn) return;
-        GlobalManager.Instance.GameLevel = curLevel;
-        EventCtrl.SendEvent(EventDefine.OnLevelModify);
+        EventCtrl.SendEvent(EventDefine.OnLevelModify,curId);
     }
 }

@@ -44,7 +44,6 @@ public class UpgradeManager : Singleton<UpgradeManager>
             var key = (EUpgradeItem)Random.Range(0, upgradeDic.Count);
             var val = upgradeDic[key];
             if (val <= 0) continue;
-            if(key==EUpgradeItem.CircleDamage && addition.cCount==0) continue;
             if(list.Contains(key)) continue;
             list.Add(key);
             count--;

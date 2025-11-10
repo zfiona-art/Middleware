@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameStatus.SuperRevival:
                 player.ResetHealth();
-                player.SetSuperTime();
+                player.SetSuperTime(5);
                 SwitchState(GameStatus.Playing);
                 break;
             case GameStatus.End:

@@ -28,7 +28,8 @@ public class UIMain : UIBase
     private Transform trChapter3;
     
     private DataLevel dataLevel;
-    private int CurChapter => GlobalManager.Instance.ChapterId;
+    private int curChapter;
+    private int chooseLevel;
 
     public override void OnPostAwake()
     {
@@ -55,8 +56,8 @@ public class UIMain : UIBase
     {
         txtCoin.text = GlobalManager.Instance.Coin.ToString();
         txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
-        sliderLevel.value = 1f * GlobalManager.Instance.GameLevel / GameManager.Instance.TotalLevelCnt;
         
+        curChapter = GlobalManager.Instance.ChapterId;
         UpdateLevelStars();
         UpdateChapter();
     }
@@ -69,14 +70,18 @@ public class UIMain : UIBase
     
     private void RefreshLevel(object data)
     {
-        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GameManager.Instance.TotalLevelCnt}";
+        var id = (data as EvtData)?.GetData<int>() ?? 0;
+        Debug.Log(curChapter + " " + (id+1));
+        chooseLevel = (curChapter - 1) * GlobalManager.ChapterLevelCnt + id + 1;
+        txtLevel.text = $"{chooseLevel}/{GameManager.Instance.TotalLevelCnt}";
+        sliderLevel.value = 1f * chooseLevel / GameManager.Instance.TotalLevelCnt;
     }
 
     private void UpdateLevelStars()
     {
         var oriStars = GlobalManager.Instance.GetLevelStars();
         var newStars = new List<int>();
-        var count = GlobalManager.ChapterLevelCnt * (CurChapter - 1);
+        var count = GlobalManager.ChapterLevelCnt * (curChapter - 1);
         for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
         {
             if(count + i < oriStars.Count)
@@ -88,30 +93,30 @@ public class UIMain : UIBase
         {
             var cnt = i >= newStars.Count ? 0 : newStars[i];
             var go = trLevels.GetChild(i).GetComponent<ItemLevel>();
-            go.Refresh(i, cnt, CurChapter);
+            var isOn = (curChapter - 1) * GlobalManager.ChapterLevelCnt + i + 1 == GlobalManager.Instance.GameLevel;
+            go.Refresh(i, cnt, isOn);
         }
     }
 
     private void UpdateChapter()
     {
-        trChapter1.gameObject.SetActive(CurChapter == 1);
-        trChapter2.gameObject.SetActive(CurChapter == 2);
-        trChapter3.gameObject.SetActive(CurChapter == 3);
-        txtLevel.text = $"{GlobalManager.Instance.GameLevel}/{GameManager.Instance.TotalLevelCnt}";
+        trChapter1.gameObject.SetActive(curChapter == 1);
+        trChapter2.gameObject.SetActive(curChapter == 2);
+        trChapter3.gameObject.SetActive(curChapter == 3);
     }
 
     public void _btnLeftClick()
     {
-        if(CurChapter == 1) return;
-        GlobalManager.Instance.GameLevel -= GlobalManager.ChapterLevelCnt;
+        if(curChapter == 1) return;
+        curChapter--;
         UpdateLevelStars();
         UpdateChapter();
     }
 
     public void _btnRightClick()
     {
-        if(CurChapter == dataLevel.array.Count / GlobalManager.ChapterLevelCnt) return;
-        GlobalManager.Instance.GameLevel += GlobalManager.ChapterLevelCnt;
+        if(curChapter == dataLevel.array.Count / GlobalManager.ChapterLevelCnt) return;
+        curChapter++;
         UpdateLevelStars();
         UpdateChapter();
     }
@@ -123,6 +128,7 @@ public class UIMain : UIBase
     
     public void _btnStartClick()
     {
+        GlobalManager.Instance.GameLevel = chooseLevel;
         GameManager.Instance.StartGame();
         UIManager.Instance.CloseTopPanel();
         UIManager.Instance.OpenPanel(UIPath.game);
