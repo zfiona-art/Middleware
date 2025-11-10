@@ -14,6 +14,7 @@ public class UIMain : UIBase
     private Button btnSign;
     private Button btnShop;
     private Button btnDou;
+    private Button btnClean;
     
     private Image imgHead;
     private Text txtName;
@@ -83,7 +84,7 @@ public class UIMain : UIBase
         {
             var cnt = i >= newStars.Count ? 0 : newStars[i];
             var go = trLevels.GetChild(i).GetComponent<ItemLevel>();
-            go.Init(i, cnt);
+            go.Init(i, cnt, trLevels);
         }
     }
 
@@ -142,5 +143,10 @@ public class UIMain : UIBase
         if(!success) return;
         txtName.text = nickName;
         HttpImage.AsyncLoadWithoutCache(url, s => imgHead.sprite = s);
+    }
+
+    public void _btnCleanClick()
+    {
+        PlayerPrefs.DeleteAll();
     }
 }

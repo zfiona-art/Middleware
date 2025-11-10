@@ -12,7 +12,6 @@ public class Enemy : PoolItem
     private Animator animator;
     protected Rigidbody2D rigid; 
     protected Rigidbody2D target;
-    protected bool isFiring;
     
     private readonly int runHash = Animator.StringToHash("run");
     private readonly int harmHash = Animator.StringToHash("harm");
@@ -32,14 +31,6 @@ public class Enemy : PoolItem
         base.OnSpawn();
         health = data.health + GameManager.Instance.GetCurLevelData().healthAdd;
         animator.SetBool(runHash,false);
-        isFiring = false;
-    }
-
-    protected void DoAttack()
-    {
-        animator.SetBool(runHash, false);
-        rigid.velocity = Vector3.zero;
-        isFiring = true;
     }
 
     protected virtual void DoLoop()

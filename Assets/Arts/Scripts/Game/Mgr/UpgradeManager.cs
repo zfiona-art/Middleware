@@ -19,13 +19,12 @@ public class UpgradeManager : Singleton<UpgradeManager>
             {EUpgradeItem.MaxHealth,10},
             {EUpgradeItem.MoveSpeed,2},
             {EUpgradeItem.FireSpeed,1},
-            {EUpgradeItem.BulletDistance,2},
             {EUpgradeItem.BulletDamage,10},
             {EUpgradeItem.CircleCount,4},
             {EUpgradeItem.CircleDamage,10},
-            {EUpgradeItem.Skill1,2},
-            {EUpgradeItem.Skill2,2},
-            {EUpgradeItem.Skill3,2},
+            {EUpgradeItem.Skill1,5},
+            {EUpgradeItem.Skill2,5},
+            {EUpgradeItem.Skill3,5},
         };
         addition = new Addition();
         if (GlobalManager.Instance.GameLevel == 1)
@@ -68,9 +67,6 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.FireSpeed:
                 describe = $"攻击速度: +1";
                 break;
-            case EUpgradeItem.BulletDistance:
-                describe = $"攻击距离: +1";
-                break;
             case EUpgradeItem.BulletDamage:
                 describe = $"篮球伤害: +1";
                 break;
@@ -109,9 +105,6 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 addition.fireSpeed += 1;
                 GameManager.Instance.player.ResetFire();
                 break;
-            case EUpgradeItem.BulletDistance:
-                addition.bDistance += 1;
-                break;
             case EUpgradeItem.BulletDamage:
                 addition.bDamage += 1;
                 break;
@@ -141,7 +134,6 @@ public class UpgradeManager : Singleton<UpgradeManager>
         MaxHealth,
         MoveSpeed,
         FireSpeed,
-        BulletDistance,
         BulletDamage,
         CircleCount,
         CircleDamage,

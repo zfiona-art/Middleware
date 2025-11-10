@@ -16,25 +16,11 @@ public class Enemy3 : Enemy
     protected override void DoLoop()
     {
         var distance = Vector2.Distance(rigid.position, target.position);
-        if (isFiring)
+        if (distance < data.fireDistance)
         {
-            if (distance > data.fireDistance)
-            {
-                isFiring = false;
-                return;
-            }
-            rigid.MovePosition(rigid.position);
             TryFire();   
         }
-        else
-        {
-            if (distance < data.fireDistance)
-            {
-                DoAttack();
-                return;
-            }
-            base.DoLoop();
-        }
+        base.DoLoop();
     }
     
     private void TryFire()

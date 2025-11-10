@@ -36,6 +36,7 @@ public class UIWin : UIBase
         SetItemValue("永久移动速度", additionCache.moveSpeed);
         SetItemValue("永久攻击速度", additionCache.fireSpeed);
         SetItemValue("永久攻击伤害", additionCache.bDamage);
+        SetItemValue("永久尖叫鸡数量", additionCache.cCount);
         SetItemValue("永久尖叫鸡伤害", additionCache.cDamage);
     }
 

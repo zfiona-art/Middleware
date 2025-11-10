@@ -28,7 +28,7 @@ public class Weapon2 : Weapon
     public override void OnHarmOver(Collider2D c)
     {
         var render = c.GetComponentInChildren<SpriteRenderer>();
-        render.color = Color.clear;
+        render.color = new Color(1, 1, 1, 0);
         render.DOFade(1, 0.2f);
     }
 

@@ -9,6 +9,8 @@ public class ItemLevel : MonoBehaviour
     private Toggle tog1;
     private Toggle tog2;
     private Toggle tog3;
+    private Toggle togSelf;
+    private int curId;
 
     void Awake()
     {
@@ -16,13 +18,25 @@ public class ItemLevel : MonoBehaviour
         tog1 = transform.Find("tog1").GetComponent<Toggle>();
         tog2 = transform.Find("tog2").GetComponent<Toggle>();
         tog3 = transform.Find("tog3").GetComponent<Toggle>();
+        
     }
 
-    public void Init(int id,int star)
+    public void Init(int id,int star,Transform trLevels)
     {
+        curId = id;
         text.text = (id + 1).ToString();
         tog1.isOn = star > 0;
         tog2.isOn = star > 1;
         tog3.isOn = star > 2;
+        
+        togSelf = transform.GetComponent<Toggle>();
+        togSelf.group = trLevels.GetComponent<ToggleGroup>();
+        togSelf.onValueChanged.AddListener(OnSelfToggle);
+        togSelf.isOn = GlobalManager.Instance.GameLevel == id + 1;
+    }
+
+    private void OnSelfToggle(bool isOn)
+    {
+        GlobalManager.Instance.GameLevel = curId + 1;
     }
 }

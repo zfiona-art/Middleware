@@ -15,4 +15,5 @@ public class UIPath : MonoBehaviour
     public const string upgrade = "Prefab/UI/ui_upgrade";
     public const string rank = "Prefab/UI/ui_rank";
     public const string sign = "Prefab/UI/ui_sign";
+    public const string setting = "Prefab/UI/ui_setting";
 }

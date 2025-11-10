@@ -1,28 +1,31 @@
 using System;
-using TTSDK;
 using UnityEngine;
+#if MINIGAME_SUBPLATFORM_DOUYIN
+using TTSDK;
+#endif
+
 
 public class SdkManager : Singleton<SdkManager>
 {
-    private bool IsDouPlatform()
-    {
-        #if MINIGAME_SUBPLATFORM_DOUYIN
-            return true;
-        #endif
-        return false;
-    }
     public override void Init()
     {
-        if (!IsDouPlatform()) return;
-        TT.InitSDK();
+#if MINIGAME_SUBPLATFORM_DOUYIN
+         TT.InitSDK();
+#endif
+        
     }
     
     public void Login(Action<bool,string,string> callback)
     {
-        if (!IsDouPlatform()) callback.Invoke(false, null, null);
+#if MINIGAME_SUBPLATFORM_DOUYIN
         TT.GetUserInfo(GetLoginOk(callback),GetLoginError(callback));
+#else
+        callback.Invoke(false, null, null);
+#endif
+        
     }
 
+#if MINIGAME_SUBPLATFORM_DOUYIN
     private TTAccount.OnGetUserInfoSuccessCallback GetLoginOk(Action<bool,string,string> callback)
     {
         return (ref TTUserInfo info) =>
@@ -38,11 +41,15 @@ public class SdkManager : Singleton<SdkManager>
             Debug.LogError(errMsg);
         };
     }
+#endif
     
     public void ShowAd(Action<bool,int> callback) //是否看完视频，看了几次
     {
-        if (!IsDouPlatform()) callback.Invoke(true, 0);
+#if MINIGAME_SUBPLATFORM_DOUYIN
         TT.CreateRewardedVideoAd("", callback);
+#else
+        callback.Invoke(true, 0);
+#endif
     }
 
 }

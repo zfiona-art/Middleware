@@ -61,8 +61,9 @@ public class UIGame : UIBase
     {
         Debug.Log("打开设置面板，暂停游戏");
         timerHandle.Paused = !timerHandle.Paused;
-        var s = timerHandle.Paused ? GameStatus.Paused : GameStatus.Playing;
-        GameManager.Instance.SwitchState(s);
+        
+        GameManager.Instance.SwitchState(GameStatus.Paused);
+        UIManager.Instance.OpenPanel(UIPath.setting);
     }
 
     private void OnSkillGet(object data)
