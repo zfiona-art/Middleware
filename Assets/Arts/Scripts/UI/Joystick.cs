@@ -10,7 +10,7 @@ public class Joystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointer
     public float sensitivity = 1;
     private Vector2 curPosition;
     private Vector2 curDirection;
-    private const float DoubleClickInterval = 0.2f;
+    private const float DoubleClickInterval = 0.5f;
     private float lastClickTime;
     
     public static Joystick Instance;

@@ -183,7 +183,7 @@ public class GameManager : MonoBehaviour
         foreach (var enemy in GetCurLevelData().rounds[roundId].enemies)
         {
             var go =  PoolManager.Instance.Get<Enemy>("enemy" + enemy.id,rootEnemies);
-            go.transform.position = enemy.pos;
+            go.transform.position = new Vector3(enemy.x, enemy.y);
             curLiveEnemyNum++;
         }
         roundId++;

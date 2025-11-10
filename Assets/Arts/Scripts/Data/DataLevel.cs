@@ -35,6 +35,7 @@ public class DataLevel : ScriptableObject
     public class Enemy
     {
         public int id;
-        public Vector2 pos;
+        public int x;
+        public int y;
     }
 }

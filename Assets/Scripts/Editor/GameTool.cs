@@ -1,68 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
 public class GameTool
 {
-    private const int PanelCnt = 5;
-    private const float TreeCnt = 7;
     [MenuItem("Tools/CreateMap")] 
     private static void CreateMap()
     {
-        //生成地图
-        var rootGround = GameObject.Find("level/grounds").transform;
-        var data = Resources.Load<DataGame>("Data/Game");
-        var ground = Resources.Load<Ground>("Prefab/Game/ground");
-        var point = new Vector2(0, data.panelWidth * (PanelCnt + 1) * 0.5f);
-        
-        for (var i = 0; i < PanelCnt; i++)
+        var data = Resources.Load<DataLevel>("Data/Level");
+        data.array.Clear();
+        var lines = File.ReadAllLines(Application.dataPath + "/Arts/Resources/Data/levels.txt");
+        foreach (var line in lines)
         {
-            point.y -= data.panelWidth;
-            point.x = data.panelWidth * (PanelCnt + 1) * 0.5f;
-            for (var j = 0; j < PanelCnt; j++)
+            var level = new DataLevel.Level();
+            var levelStr = line.Split(';');
+            for (var i = 1; i < levelStr.Length; i++)
             {
-                point.x -= data.panelWidth;
-                var go = Object.Instantiate(ground, rootGround);
-                go.transform.position = point;
+                if(string.IsNullOrEmpty(levelStr[i])) continue;
+                var rStr = levelStr[i].Split('{', '}');
+                var r = new DataLevel.Round();
+                foreach (var str in rStr)
+                {
+                    if(string.IsNullOrEmpty(str)) continue;
+                    var eStr = str.Split(',');
+                    var e = new DataLevel.Enemy()
+                    {
+                        id = int.Parse(eStr[0]),
+                        x = int.Parse(eStr[1]),
+                        y = int.Parse(eStr[2]),
+                    };
+                    r.enemies.Add(e);
+                }
+                level.rounds.Add(r);
             }
+            var info = levelStr[0].Split(",");
+            level.groundCnt = int.Parse(info[0]);
+            level.healthAdd = int.Parse(info[1]);
+            level.damageAdd = int.Parse(info[2]);
+            data.array.Add(level);
         }
         
-        //生成边界
-        var rootBound = GameObject.Find("level/bounds").transform;
-        var tree = Resources.Load<Prop>("Prefab/Game/tree1");
-        var treeDis = data.panelWidth / TreeCnt;
-        var cnt = PanelCnt * TreeCnt;
-        //纵向
-        point = new Vector2(data.panelWidth * PanelCnt * 0.5f, data.panelWidth * (PanelCnt - 1) * 0.5f + treeDis * (TreeCnt + 1) * 0.5f);
-        for (var i = 0; i < cnt; i++)
-        {
-            point.y -= treeDis;
-            var go = Object.Instantiate(tree, rootBound);
-            go.transform.position = point;
-        }
-        point = new Vector2(-data.panelWidth * PanelCnt * 0.5f, data.panelWidth * (PanelCnt - 1) * 0.5f + treeDis * (TreeCnt + 1) * 0.5f);
-        for (var i = 0; i < cnt; i++)
-        {
-            point.y -= treeDis;
-            var go = Object.Instantiate(tree, rootBound);
-            go.transform.position = point;
-        }
-        //横向
-        point = new Vector2(data.panelWidth * (PanelCnt - 1) * 0.5f + treeDis * (TreeCnt + 1) * 0.5f,data.panelWidth * PanelCnt * 0.5f);
-        for (var i = 0; i < cnt; i++)
-        {
-            point.x -= treeDis;
-            var go = Object.Instantiate(tree, rootBound);
-            go.transform.position = point;
-        }
-        point = new Vector2(data.panelWidth * (PanelCnt - 1) * 0.5f + treeDis * (TreeCnt + 1) * 0.5f,-data.panelWidth * PanelCnt * 0.5f);
-        for (var i = 0; i < cnt; i++)
-        {
-            point.x -= treeDis;
-            var go = Object.Instantiate(tree, rootBound);
-            go.transform.position = point;
-        }
+        EditorUtility.SetDirty(data);
+        AssetDatabase.SaveAssets();
+        Debug.Log("关卡数据 保存成功");
     }
+
+ 
+    
+    
+
+  
+
+    
+    
     
 }

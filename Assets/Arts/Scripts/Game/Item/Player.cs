@@ -22,6 +22,7 @@ public class Player : PoolItem
     private Addition addition;
     private readonly int fireHash = Animator.StringToHash("fire");
     private readonly int liveHash = Animator.StringToHash("live");
+    private float FullHealth => data.health + addition.maxHealth + UpgradeManager.Instance.addition.maxHealth;
     
     void Awake()
     {
@@ -56,8 +57,8 @@ public class Player : PoolItem
     public void ResetHealth()
     {
         animator.SetBool(liveHash, true);
-        health = data.health + addition.maxHealth + UpgradeManager.Instance.addition.maxHealth;
-        hp.size = new Vector2(health / data.health, 1);
+        health = FullHealth;
+        hp.size = new Vector2(health / FullHealth, 1);
     }
 
     public void ResetFire()
@@ -98,7 +99,7 @@ public class Player : PoolItem
             return;
         }
 
-        var speed = data.moveSpeed + addition.moveSpeed + UpgradeManager.Instance.addition.moveSpeed;
+        var speed = Math.Min(20, data.moveSpeed + addition.moveSpeed + UpgradeManager.Instance.addition.moveSpeed);
         rb.MovePosition(rb.position + speed * Time.fixedDeltaTime * movement);
     }
 
@@ -138,7 +139,7 @@ public class Player : PoolItem
         if (nearestDistance > GetDistance())
         {
             var trDir = nearestEnemy.transform.position - transform.position;
-            var angle = Vector2.SignedAngle(Vector2.up, trDir);
+            var angle = Vector2.SignedAngle(Vector2.down, trDir);
             dirTr.rotation = Quaternion.Euler(0f, 0f, angle);
             dirTr.gameObject.SetActive(true);
             return;
@@ -157,7 +158,7 @@ public class Player : PoolItem
         if(GameManager.Instance.status != GameStatus.Playing) return;
         
         health = Mathf.Max(0, health - damage);
-        hp.size = new Vector2(health / data.health, 1);
+        hp.size = new Vector2(health / FullHealth, 1);
         if (health == 0)
         {
             star = Math.Max(1, star - 1);
