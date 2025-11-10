@@ -11,6 +11,7 @@ public class Weapon : PoolItem
 
     public virtual void OnHarmOver(Collider2D c)
     {
+        damage = 0;
         Dispose();
     }
     

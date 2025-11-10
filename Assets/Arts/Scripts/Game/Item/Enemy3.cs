@@ -43,6 +43,7 @@ public class Enemy3 : Enemy
         
         var bullet = PoolManager.Instance.Get<Enemy3Weapon>("enemy3_weapon",GameManager.Instance.rootBullets);
         bullet.transform.position = transform.Find("shoot").position; 
+        bullet.transform.localEulerAngles = Vector3.zero;
         bullet.Init(warn,GetDamage());
         var rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = data.fireSpeed * Vector3.up;
@@ -50,6 +51,7 @@ public class Enemy3 : Enemy
         vp_Timer.In(1f, () =>
         {
             bullet.transform.position = warn.transform.position + Vector3.up * 10;
+            bullet.transform.localEulerAngles = Vector3.forward * 180;
             rb.velocity = data.fireSpeed * 1.2f * Vector3.down;
         });
     }

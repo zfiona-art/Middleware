@@ -71,7 +71,6 @@ public class UIMain : UIBase
     private void RefreshLevel(object data)
     {
         var id = (data as EvtData)?.GetData<int>() ?? 0;
-        Debug.Log(curChapter + " " + (id+1));
         chooseLevel = (curChapter - 1) * GlobalManager.ChapterLevelCnt + id + 1;
         txtLevel.text = $"{chooseLevel}/{GameManager.Instance.TotalLevelCnt}";
         sliderLevel.value = 1f * chooseLevel / GameManager.Instance.TotalLevelCnt;

@@ -64,7 +64,7 @@ public class Player : PoolItem
     {
         bSpawnHandle.Cancel();
         var speed = data.FireSpeed + addition.fireSpeed + UpgradeManager.Instance.addition.fireSpeed;
-        var interval = Math.Max(0.1f, (10 - speed) / 10);
+        var interval = Math.Max(0.2f, (10 - speed) / 10);
         vp_Timer.In(interval, Fire,0,interval,bSpawnHandle);
     }
     
@@ -204,7 +204,8 @@ public class Player : PoolItem
 
     public void RefreshWeapon2()
     {
-        if(GlobalManager.Instance.GetPlayerAdd().cCount == 0) return;
+        if(addition.cCount == 0 && UpgradeManager.Instance.addition.cCount == 0) return;
+        
         if (weapon2 == null)
         {
             weapon2 = PoolManager.Instance.Get<Weapon2>("weapon2", transform);
