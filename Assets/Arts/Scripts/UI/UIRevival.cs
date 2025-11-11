@@ -33,7 +33,7 @@ public class UIRevival : UIBase
             if (isSuc)
             {
                 GameManager.Instance.SwitchState(GameStatus.SuperRevival);
-                UIManager.Instance.CloseTopPanel(); 
+                UIManager.Instance.ClosePanel(UIPath.revival);
             }
         });
     }

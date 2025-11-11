@@ -18,7 +18,8 @@ public class UpgradeManager : Singleton<UpgradeManager>
         {
             {EUpgradeItem.MaxHealth,10},
             {EUpgradeItem.MoveSpeed,2},
-            {EUpgradeItem.FireSpeed,1},
+            {EUpgradeItem.FireSpeed,2},
+            {EUpgradeItem.BulletDistance,2},
             {EUpgradeItem.BulletDamage,10},
             {EUpgradeItem.CircleCount,4},
             {EUpgradeItem.CircleDamage,10},
@@ -59,22 +60,25 @@ public class UpgradeManager : Singleton<UpgradeManager>
         switch (item)
         {
             case EUpgradeItem.MaxHealth:
-                describe = $"生命值: +1";
+                describe = $"生命值: +1%";
                 break;
             case EUpgradeItem.MoveSpeed:
-                describe = $"移动速度: +1";
+                describe = $"移动速度: +1%";
                 break;
             case EUpgradeItem.FireSpeed:
-                describe = $"攻击速度: +1";
+                describe = $"攻击速度: +1%";
+                break;
+            case EUpgradeItem.BulletDistance:
+                describe = $"攻击距离: +1%";
                 break;
             case EUpgradeItem.BulletDamage:
-                describe = $"篮球伤害: +1";
+                describe = $"篮球伤害: +1%";
                 break;
             case EUpgradeItem.CircleCount:
                 describe = $"尖叫鸡数量: +1";
                 break;
             case EUpgradeItem.CircleDamage:
-                describe = $"尖叫鸡伤害: +1";
+                describe = $"尖叫鸡伤害: +1%";
                 break;
             case EUpgradeItem.Skill1:
                 describe = "得到1个旋风技能";
@@ -105,6 +109,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 addition.fireSpeed += 1;
                 GameManager.Instance.player.ResetFire();
                 break;
+            case EUpgradeItem.BulletDistance:
+                addition.bDistance += 1;
+                break;
             case EUpgradeItem.BulletDamage:
                 addition.bDamage += 1;
                 break;
@@ -134,6 +141,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
         MaxHealth,
         MoveSpeed,
         FireSpeed,
+        BulletDistance,
         BulletDamage,
         CircleCount,
         CircleDamage,

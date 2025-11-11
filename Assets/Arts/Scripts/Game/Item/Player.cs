@@ -102,7 +102,7 @@ public class Player : PoolItem
         rb.MovePosition(rb.position + speed * Time.fixedDeltaTime * movement);
     }
 
-    public float GetDistance()
+    private float GetDistance()
     {
         return data.bulletDistance + UpgradeManager.Instance.addition.bDistance;
     }
@@ -181,17 +181,21 @@ public class Player : PoolItem
         Debug.Log("Trigger: " + collision.tag);
         if (collision.transform.CompareTag("Energy"))
         {
-            PoolManager.Instance.Dispose(collision.GetComponent<Energy>());
-            energyCnt++;
-            var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
-            if (energyCnt == data.levelUpExps[index]) //升级
+            var energy = collision.GetComponent<Energy>();
+            energy.AutoCollect(() =>
             {
-                energyCnt = 0;
-                level++;
-                GameManager.Instance.SwitchState(GameStatus.Paused);
-                UIManager.Instance.OpenPanel(UIPath.upgrade);
-            }
-            EventCtrl.SendEvent(EventDefine.OnEnergyGet);
+                if (GameManager.Instance.status != GameStatus.Playing) return;
+                energyCnt++;
+                var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
+                if (energyCnt == data.levelUpExps[index]) //升级
+                {
+                    energyCnt = 0;
+                    level++;
+                    GameManager.Instance.SwitchState(GameStatus.Paused);
+                    UIManager.Instance.OpenPanel(UIPath.upgrade);
+                }
+                EventCtrl.SendEvent(EventDefine.OnEnergyGet);
+            });
         }
         
         if (collision.CompareTag("EnemyWeapon"))
