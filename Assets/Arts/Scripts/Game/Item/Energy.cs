@@ -45,9 +45,9 @@ public class Energy : PoolItem
         if (target != null)
         {
             timeElapsed += Time.deltaTime * 0.2f;
-            transform.position = Vector3.Lerp(transform.position, target.position, timeElapsed);
+            transform.position = Vector3.MoveTowards(transform.position, target.position, timeElapsed);
             var distance = Vector3.Distance(transform.position, target.position);
-            if (distance < 0.1f)
+            if (distance < 0.01f)
             {
                 PoolManager.Instance.Dispose(this);
                 callback?.Invoke(curId);

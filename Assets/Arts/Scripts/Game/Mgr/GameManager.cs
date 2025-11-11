@@ -178,6 +178,7 @@ public class GameManager : MonoBehaviour
     {
         if (curLiveEnemyNum > 0) return;
         if (roundId == GetCurLevelData().rounds.Count) return;
+        if (status != GameStatus.Playing) return;
         
         curLiveEnemyNum = 0;
         foreach (var enemy in GetCurLevelData().rounds[roundId].enemies)
