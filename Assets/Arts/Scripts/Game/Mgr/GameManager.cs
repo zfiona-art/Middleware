@@ -6,6 +6,7 @@ using DG.Tweening;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,8 +19,6 @@ public class GameManager : MonoBehaviour
     public Transform rootEnergies;//能量根节点
     public Transform rootBullets;//子弹根节点
     public Transform rootSkills; //技能根节点
-    //地板部分
-    [SerializeField] private int curPropNum;
     //敌人部分
     private readonly vp_Timer.Handle eSpawnHandle = new ();
     private int roundId;
@@ -30,6 +29,7 @@ public class GameManager : MonoBehaviour
     public Player player;
     private DataGame dataGame;
     private DataLevel dataLevel;
+    private int curSkillNum;
     
     private void Awake()
     {
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
                 player.bSpawnHandle.Cancel();
                 PoolManager.Instance.Clear();
                 UpgradeManager.Instance.Reset();
-                curPropNum = 0;
+                curSkillNum = 0;
                 roundId = 0;
                 curDeadEnemyNum = 0;
                 curLiveEnemyNum = 0;
@@ -189,7 +189,7 @@ public class GameManager : MonoBehaviour
         roundId++;
     }
     
-    public void TryGenEnergy(Enemy enemy)
+    public void TryGenEnergy(Vector3 ePos, int p)
     {
         curLiveEnemyNum--;
         if (curLiveEnemyNum == 0)
@@ -213,9 +213,24 @@ public class GameManager : MonoBehaviour
             });
         }
         
-        var go =  PoolManager.Instance.Get<Energy>("energy",rootEnergies);
+        if(TryGenSkill(ePos, p)) return;
+        var go = PoolManager.Instance.Get<Energy>("energy",rootEnergies);
         if (!go) return;
-        go.transform.position = enemy.transform.position;
+        go.transform.position = ePos;
+        go.Init(0);
+    }
+
+    private bool TryGenSkill(Vector3 ePos, int p)
+    {
+        if(curSkillNum > dataGame.maxSkillCount) return false;
+        if(!ToolUtil.IsProbabilityOk(p)) return false;
+        var go = PoolManager.Instance.Get<Energy>("energy",rootEnergies);
+        if (!go) return false;
+        
+        go.transform.position = ePos;
+        go.Init(Random.Range(1, 4));
+        curSkillNum++;
+        return true;
     }
     
     public int TotalLevelCnt => dataLevel.array.Count;

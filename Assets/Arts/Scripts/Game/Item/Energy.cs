@@ -11,7 +11,8 @@ public class Energy : PoolItem
     
     private float timeElapsed;
     private float timeBlocker;
-    private Action callback;
+    private Action<int> callback;
+    private int curId;
     
     public override void OnSpawn()
     {
@@ -21,7 +22,15 @@ public class Energy : PoolItem
         transform.localScale = Vector3.one;
     }
 
-    public void AutoCollect(Action action)
+    public void Init(int id)
+    {
+        var child = transform.GetChild(0);
+        child.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Image/Skill/#" + id);
+        child.transform.localScale = Vector3.one * (id == 0 ? 1 : 0.5f);
+        curId = id;
+    }
+
+    public void AutoCollect(Action<int> action)
     {
         target = GameManager.Instance.player.transform;
         callback = action;
@@ -41,7 +50,7 @@ public class Energy : PoolItem
             if (distance < 0.1f)
             {
                 PoolManager.Instance.Dispose(this);
-                callback?.Invoke();
+                callback?.Invoke(curId);
             }
         }
     }

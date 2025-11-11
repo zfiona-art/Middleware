@@ -123,18 +123,22 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 addition.cDamage += 1;
                 break;
             case EUpgradeItem.Skill1:
-                EventCtrl.SendEvent(EventDefine.OnSkillGet,1);
+                OnSkillGet(1);
                 break;
             case EUpgradeItem.Skill2:
-                EventCtrl.SendEvent(EventDefine.OnSkillGet,2);
+                OnSkillGet(2);
                 break;
             case EUpgradeItem.Skill3:
-                EventCtrl.SendEvent(EventDefine.OnSkillGet,3);
+                OnSkillGet(3);
                 break;
         }
         upgradeDic[item]--;
     }
-    
+
+    private void OnSkillGet(int id)
+    {
+        EventCtrl.SendEvent(EventDefine.OnSkillGet,id);
+    }
     
     public enum EUpgradeItem
     {

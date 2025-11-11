@@ -182,20 +182,7 @@ public class Player : PoolItem
         if (collision.transform.CompareTag("Energy"))
         {
             var energy = collision.GetComponent<Energy>();
-            energy.AutoCollect(() =>
-            {
-                if (GameManager.Instance.status != GameStatus.Playing) return;
-                energyCnt++;
-                var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
-                if (energyCnt == data.levelUpExps[index]) //升级
-                {
-                    energyCnt = 0;
-                    level++;
-                    GameManager.Instance.SwitchState(GameStatus.Paused);
-                    UIManager.Instance.OpenPanel(UIPath.upgrade);
-                }
-                EventCtrl.SendEvent(EventDefine.OnEnergyGet);
-            });
+            energy.AutoCollect(RefreshEnergy);
         }
         
         if (collision.CompareTag("EnemyWeapon"))
@@ -204,6 +191,26 @@ public class Player : PoolItem
             BeHarmed(weapon.damage);
             weapon.OnHarmOver(collision);
         }
+    }
+
+    private void RefreshEnergy(int id)
+    {
+        if (GameManager.Instance.status != GameStatus.Playing) return;
+        if (id > 0)
+        {
+            EventCtrl.SendEvent(EventDefine.OnSkillGet,id);
+            return;
+        }
+        energyCnt++;
+        var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
+        if (energyCnt == data.levelUpExps[index]) //升级
+        {
+            energyCnt = 0;
+            level++;
+            GameManager.Instance.SwitchState(GameStatus.Paused);
+            UIManager.Instance.OpenPanel(UIPath.upgrade);
+        }
+        EventCtrl.SendEvent(EventDefine.OnEnergyGet);
     }
 
     public void RefreshWeapon2()

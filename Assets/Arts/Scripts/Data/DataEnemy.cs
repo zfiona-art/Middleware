@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Enemy", menuName = "Data/Enemy", order = 2)]
 public class DataEnemy : ScriptableObject
@@ -13,4 +12,5 @@ public class DataEnemy : ScriptableObject
     public float lookDistance;
     public float fireDistance;
     public float fireSpeed;
+    public int skillDropValue;
 }

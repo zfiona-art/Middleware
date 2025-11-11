@@ -111,7 +111,7 @@ public class Enemy : PoolItem
     void DoDead()
     {
         PoolManager.Instance.Dispose(this);
-        GameManager.Instance.TryGenEnergy(this);
+        GameManager.Instance.TryGenEnergy(transform.position,data.skillDropValue);
         EventCtrl.SendEvent(EventDefine.OnEnemyKill);
     }
 
