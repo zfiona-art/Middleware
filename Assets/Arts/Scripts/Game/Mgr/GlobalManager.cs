@@ -94,7 +94,6 @@ public class GlobalManager : Singleton<GlobalManager>
         add.fireSpeed += addition.fireSpeed;
         add.bDistance += addition.bDistance;
         add.bDamage += addition.bDamage;
-        add.cCount += addition.cCount;
         add.cDamage += addition.cDamage;
         AdditionCache = JsonConvert.SerializeObject(add);
     }

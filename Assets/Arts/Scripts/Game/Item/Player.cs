@@ -44,7 +44,6 @@ public class Player : PoolItem
         star = 3;
         ResetHealth();
         ResetFire();
-        RefreshWeapon2();
     }
 
     public void SetSuperTime(float delay)
@@ -99,7 +98,7 @@ public class Player : PoolItem
             return;
         }
 
-        var speed = Math.Min(20, data.moveSpeed + addition.moveSpeed + UpgradeManager.Instance.addition.moveSpeed);
+        var speed = Math.Min(15, data.moveSpeed + addition.moveSpeed + UpgradeManager.Instance.addition.moveSpeed);
         rb.MovePosition(rb.position + speed * Time.fixedDeltaTime * movement);
     }
 
@@ -205,8 +204,6 @@ public class Player : PoolItem
 
     public void RefreshWeapon2()
     {
-        if(addition.cCount == 0 && UpgradeManager.Instance.addition.cCount == 0) return;
-        
         if (weapon2 == null)
         {
             weapon2 = PoolManager.Instance.Get<Weapon2>("weapon2", transform);

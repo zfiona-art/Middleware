@@ -7,8 +7,10 @@ using UnityEngine;
 public class Skill2 : Weapon
 {
     private const float MoveSpeed = 1.5f;
+    private const float AutoDisposeTime = 3f;
     private bool isHarmAnim;
     private Vector3 moveDir;
+    private float curTime;
     public override void OnSpawn()
     {
         base.OnSpawn();
@@ -23,12 +25,15 @@ public class Skill2 : Weapon
     {
         if (moveDir == Vector3.zero)
         {
-            var distance = GameManager.Instance.player.GetDistance();
-            var result = Physics2D.CircleCast(transform.position, distance, Vector2.zero,0, LayerMask.GetMask("Enemy"));
+            var result = Physics2D.CircleCast(transform.position, 100, Vector2.zero,0, LayerMask.GetMask("Enemy"));
             if (result)
                 moveDir = result.transform.position - transform.position;
         }
         transform.Translate( MoveSpeed * Time.deltaTime * moveDir);
+        
+        curTime +=  Time.deltaTime;
+        if (curTime >= AutoDisposeTime)
+            Dispose();
     }
     
     public override void OnHarmOver(Collider2D c)

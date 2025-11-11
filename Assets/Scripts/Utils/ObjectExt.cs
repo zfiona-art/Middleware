@@ -21,13 +21,13 @@ public static class ObjectExt
         if (o == null) return;
         for (int i = o.transform.childCount - 1; i >= 0; i--)
         {
-            Object.DestroyImmediate(o.transform.GetChild(i).gameObject);
+            Object.Destroy(o.transform.GetChild(i).gameObject);
         }
     }
 
     public static void DestroySelf(this GameObject o)
     {
-        Object.DestroyImmediate(o);
+        Object.Destroy(o);
     }
 
     public static T TryGetComponent<T>(this GameObject o) where T : Component

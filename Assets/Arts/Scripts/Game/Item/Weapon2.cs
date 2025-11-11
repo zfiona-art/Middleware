@@ -15,7 +15,7 @@ public class Weapon2 : Weapon
     
     public void Refresh()
     {
-        var maxCnt = Mathf.Min(4, UpgradeManager.Instance.addition.cCount + GlobalManager.Instance.GetPlayerAdd().cCount);
+        var maxCnt = Mathf.Min(4, UpgradeManager.Instance.addition.cCount);
         var perAngle = 360f / maxCnt;
         for (var i = 0; i < transform.childCount; i++)
         {

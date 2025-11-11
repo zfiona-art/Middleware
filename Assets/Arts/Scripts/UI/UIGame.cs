@@ -105,5 +105,6 @@ public class UIGame : UIBase
     private void OnGameLevelUp(object data)
     {
         txtGameLevel.text = $"关卡:{GlobalManager.Instance.GameLevel}";
+        rootSkill.gameObject.DestroyAllChild();
     }
 }
