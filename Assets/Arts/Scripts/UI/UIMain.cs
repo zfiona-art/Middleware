@@ -26,6 +26,8 @@ public class UIMain : UIBase
     private Transform trChapter1;
     private Transform trChapter2;
     private Transform trChapter3;
+    private Transform trChapter4;
+    private Transform trChapter5;
     
     private DataLevel dataLevel;
     private int curChapter;
@@ -102,6 +104,8 @@ public class UIMain : UIBase
         trChapter1.gameObject.SetActive(curChapter == 1);
         trChapter2.gameObject.SetActive(curChapter == 2);
         trChapter3.gameObject.SetActive(curChapter == 3);
+        trChapter4.gameObject.SetActive(curChapter == 4);
+        trChapter5.gameObject.SetActive(curChapter == 5);
     }
 
     public void _btnLeftClick()

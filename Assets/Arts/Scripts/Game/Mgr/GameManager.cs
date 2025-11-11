@@ -41,11 +41,12 @@ public class GameManager : MonoBehaviour
         PoolManager.Instance.Init();
         UpgradeManager.Instance.Init();
         UIManager.Instance.OpenPanel(UIPath.loading);
-        CreateMap();
+        //CreateMap();
     }
     
     public void StartGame()
     {
+        CreateMap();
         vp_Timer.In(0.5f, TryGenPlayer);
         vp_Timer.In(0f, TryGenEnemy,0,dataGame.enemyInterval,eSpawnHandle);
         SwitchState(GameStatus.Paused);
@@ -152,12 +153,11 @@ public class GameManager : MonoBehaviour
                 rootEnergies.gameObject.DestroyAllChild();
                 rootBullets.gameObject.DestroyAllChild();
                 rootSkills.gameObject.DestroyAllChild();
+                rootGrounds.gameObject.DestroyAllChild();
+                rootProps.gameObject.DestroyAllChild();
                 break;
             case GameStatus.Next:
                 SwitchState(GameStatus.End);
-                rootGrounds.gameObject.DestroyAllChild();
-                rootProps.gameObject.DestroyAllChild();
-                CreateMap();
                 StartGame();
                 break;
         }
