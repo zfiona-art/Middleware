@@ -8,7 +8,6 @@ using UnityEngine;
 public class Skill3 : Weapon
 {
     public static int GenerateCnt;
-    protected override bool AutoDispose => false;
 
     public override void OnHarmOver(Collider2D c)
     {

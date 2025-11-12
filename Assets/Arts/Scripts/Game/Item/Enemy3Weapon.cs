@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Enemy3Weapon : Weapon
 {
-    protected override bool AutoDispose => false;
     private Prop warnPair;
+    protected override bool AutoMissDispose => false;
 
     public void Init(Prop pair, float d)
     {

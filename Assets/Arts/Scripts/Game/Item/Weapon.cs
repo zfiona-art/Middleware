@@ -7,8 +7,26 @@ using UnityEngine;
 public class Weapon : PoolItem
 {
     public float damage;
-    protected virtual bool AutoDispose => true;
+    protected virtual float AutoTimeDispose => 0;
+    protected virtual bool AutoMissDispose => true;
+    private vp_Timer.Handle handle;
 
+    public override void OnSpawn()
+    {
+        base.OnSpawn();
+        if (AutoTimeDispose > 0)
+        {
+            handle = new vp_Timer.Handle();
+            vp_Timer.In(AutoTimeDispose, Dispose, handle);
+        }
+    }
+
+    public override void OnDespawn()
+    {
+        base.OnDespawn();
+        handle?.Cancel();
+    }
+    
     public virtual void OnHarmOver(Collider2D c)
     {
         damage = 0;
@@ -17,7 +35,7 @@ public class Weapon : PoolItem
     
     private void OnBecameInvisible()
     {
-        if(AutoDispose)
+        if(AutoMissDispose)
             Dispose();
     }
 

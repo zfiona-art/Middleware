@@ -28,6 +28,11 @@ public class PoolManager : Singleton<PoolManager>
     
     public void Clear()
     {
+        foreach (var poolsValue in pools.Values)
+        {
+            foreach (var poolItem in poolsValue)
+                poolItem.OnDespawn();
+        }
         pools.Clear();
     }
     

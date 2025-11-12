@@ -7,10 +7,10 @@ using UnityEngine;
 public class Skill2 : Weapon
 {
     private const float MoveSpeed = 1.5f;
-    private const float AutoDisposeTime = 3f;
     private bool isHarmAnim;
     private Vector3 moveDir;
-    private float curTime;
+    protected override float AutoTimeDispose => 3f;
+
     public override void OnSpawn()
     {
         base.OnSpawn();
@@ -30,10 +30,6 @@ public class Skill2 : Weapon
                 moveDir = result.transform.position - transform.position;
         }
         transform.Translate( MoveSpeed * Time.deltaTime * moveDir);
-        
-        curTime +=  Time.deltaTime;
-        if (curTime >= AutoDisposeTime)
-            Dispose();
     }
     
     public override void OnHarmOver(Collider2D c)

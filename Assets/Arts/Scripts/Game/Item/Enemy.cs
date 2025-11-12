@@ -84,7 +84,6 @@ public class Enemy : PoolItem
     {
         if (collision.CompareTag("Weapon"))
         {
-            Debug.Log(collision.name);
             var weapon = collision.GetComponentInParent<Weapon>(true);
             health -= weapon.damage;
             weapon.OnHarmOver(collision);

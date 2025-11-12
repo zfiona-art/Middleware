@@ -6,7 +6,6 @@ using UnityEngine;
 public class Skill1 : Weapon
 {
     private const float MoveSpeed = 5;
-    private const float AutoDisposeTime = 2f;
     private readonly List<Vector3> oriPositions = new ()
     {
         new Vector3 (-0.5f, 1.5f),
@@ -21,14 +20,13 @@ public class Skill1 : Weapon
         Vector2.down,
         Vector2.left,
     };
-
-    private float curTime;
+    
     private bool isHarmAnim;
+    protected override float AutoTimeDispose => 2f;
 
     public override void OnSpawn()
     {
         base.OnSpawn();
-        curTime = 0;
         isHarmAnim = false;
         for (var i = 0; i < 4; i++)
         {
@@ -43,9 +41,6 @@ public class Skill1 : Weapon
         {
             transform.GetChild(i).Translate( MoveSpeed * Time.deltaTime * moveDirs[i]);
         }
-        curTime +=  Time.deltaTime;
-        if (curTime >= AutoDisposeTime)
-            Dispose();
     }
     
     
