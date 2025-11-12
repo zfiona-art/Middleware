@@ -61,7 +61,7 @@ public class UIRank : UIBase
                 {
                     id = avatar,
                     name = "游客" + (avatar + 100),
-                    score = Random.Range(0,3000)
+                    score = Random.Range(0,5000)
                 });
             }
             rankData.Add(new RankData()
