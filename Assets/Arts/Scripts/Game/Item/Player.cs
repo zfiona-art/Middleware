@@ -24,26 +24,28 @@ public class Player : PoolItem
     private readonly int liveHash = Animator.StringToHash("live");
     private float FullHealth => data.health + addition.maxHealth + UpgradeManager.Instance.addition.maxHealth;
     
-    void Awake()
+    private void Awake()
     {
         hp = transform.Find("hp/value").GetComponent<SpriteRenderer>();
         dirTr = transform.Find("dir");
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        data = Resources.Load<DataPlayer>("Data/Player");
     }
 
-    public override void OnSpawn()
+    public override async void OnSpawn()
     {
         base.OnSpawn();
-        
+        bSpawnHandle.Cancel();
         addition = GlobalManager.Instance.GetPlayerAdd();
         weapon2?.gameObject.SetActive(false);
         energyCnt = 0;
         level = 1;
         star = 3;
+        
+        data = await ResMgr.Instance.LoadDataAsync<DataPlayer>("Player");
         ResetHealth();
         ResetFire();
+        EventCtrl.SendEvent(EventDefine.OnEnergyRefresh);
     }
 
     public void SetSuperTime(float delay)
@@ -172,6 +174,7 @@ public class Player : PoolItem
 
     public float GetEnergyPro()
     {
+        if(data ==  null) return 0;
         var index = Mathf.Min(level - 1, data.levelUpExps.Count - 1);
         return 1f * energyCnt / data.levelUpExps[index];
     }
@@ -210,7 +213,7 @@ public class Player : PoolItem
             GameManager.Instance.SwitchState(GameStatus.Paused);
             UIManager.Instance.OpenPanel(UIPath.upgrade);
         }
-        EventCtrl.SendEvent(EventDefine.OnEnergyGet);
+        EventCtrl.SendEvent(EventDefine.OnEnergyRefresh);
     }
 
     public void RefreshWeapon2()

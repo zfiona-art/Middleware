@@ -86,7 +86,7 @@ public class UIRank : UIBase
     
     public void _btnCloseClick()
     {
-        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.ClosePanel(UIPath.rank);
     }
 }
 

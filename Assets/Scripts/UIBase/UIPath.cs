@@ -6,14 +6,14 @@ public class UIPath : MonoBehaviour
 {
     public const string UIRoot = "Canvas";
     
-    public const string loading = "Prefab/UI/ui_loading";
-    public const string main = "Prefab/UI/ui_main";
-    public const string shop = "Prefab/UI/ui_shop";
-    public const string game = "Prefab/UI/ui_game";
-    public const string win = "Prefab/UI/ui_win";
-    public const string revival = "Prefab/UI/ui_revival";
-    public const string upgrade = "Prefab/UI/ui_upgrade";
-    public const string rank = "Prefab/UI/ui_rank";
-    public const string sign = "Prefab/UI/ui_sign";
-    public const string setting = "Prefab/UI/ui_setting";
+    public const string loading = "ui_loading";
+    public const string main = "ui_main";
+    public const string shop = "ui_shop";
+    public const string game = "ui_game";
+    public const string win = "ui_win";
+    public const string revival = "ui_revival";
+    public const string upgrade = "ui_upgrade";
+    public const string rank = "ui_rank";
+    public const string sign = "ui_sign";
+    public const string setting = "ui_setting";
 }

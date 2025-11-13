@@ -25,6 +25,6 @@ public class UISign : UIBase
 
     public void _btnCloseClick()
     {
-        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.ClosePanel(UIPath.sign);
     }
 }

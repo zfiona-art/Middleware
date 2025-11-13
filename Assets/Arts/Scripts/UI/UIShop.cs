@@ -22,7 +22,7 @@ public class UIShop : UIBase
 
     public void _btnCloseClick()
     {
-        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.ClosePanel(UIPath.shop);
     }
 
     public void _btnBox1Click()

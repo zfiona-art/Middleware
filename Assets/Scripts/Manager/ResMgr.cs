@@ -1,5 +1,6 @@
-//#define Unity_ResourceAb
+#define Unity_PathStreamingAb
 
+using System;
 using System.IO;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
@@ -29,7 +30,7 @@ public sealed class ResMgr : Singleton<ResMgr>
     
     private T LoadFromEditorAsset<T>(string bundleName, string assetName) where T : Object
     {
-#if UNITY_EDITOR && !Unity_ResourceAb
+#if UNITY_EDITOR && !Unity_PathStreamingAb
         var paths = AssetDatabase.GetAssetPathsFromAssetBundle(bundleName);
         foreach (var path in paths)
         {
@@ -40,15 +41,125 @@ public sealed class ResMgr : Singleton<ResMgr>
 #endif
         return null;
     }
+
+    #region 同步接口
+    public void LoadData<T>(string assetName,Action<T> action) where T : ScriptableObject
+    {
+        LoadObject("data",assetName,action);
+    }
     
-    public T LoadObjectSync<T>(string bundleName, string assetName) where T : Object
+    public void LoadPrefabItem<T>(string assetName,Action<T> action) where T : PoolItem
+    {
+        LoadObject<GameObject>("item",assetName, go =>
+        {
+            if(go == null || action == null)
+                return;
+            action.Invoke(go.GetComponent<T>());
+        });
+    }
+    public void LoadPrefabUI(string assetName,Action<GameObject,object> action,object data)
+    {
+        LoadObject<GameObject>("ui",assetName, go =>
+        {
+            if (go == null || action == null)
+                return;
+            action.Invoke(go,data);
+        });
+    }
+
+    public void LoadAtlasSprite(string assetName,Action<Sprite> action)
+    {
+        LoadObject<SpriteAtlas>("image","image", atlas =>
+        {
+            if(atlas == null || action == null)
+                return;
+            action.Invoke(atlas.GetSprite(assetName));
+        });
+    }
+
+    public void LoadAudioClip(string assetName,Action<AudioClip> action)
+    {
+        LoadObject("audio", assetName, action);
+    }
+    #endregion
+    
+    #region 异步接口
+
+    public async UniTask<T> LoadDataAsync<T>(string assetName) where T : ScriptableObject
+    {
+        return await LoadObjectAsync<T>("data",assetName);
+    }
+    
+    public async UniTask<T> LoadPrefabItemAsync<T>(string assetName) where T : PoolItem
+    {
+        var go = await LoadObjectAsync<GameObject>("item",assetName);
+        return go.GetComponent<T>();
+    }
+    public async UniTask<GameObject> LoadPrefabUIAsync(string assetName)
+    {
+        return await LoadObjectAsync<GameObject>("ui",assetName);
+    }
+
+    public async UniTask<Sprite> LoadAtlasSpriteAsync(string assetName)
+    {
+        var atlas = await LoadObjectAsync<SpriteAtlas>("image","image");
+        return atlas?.GetSprite(assetName);
+    }
+    public async UniTask<AudioClip> LoadAudioClipsAsync(string assetName)
+    {
+        return await LoadObjectAsync<AudioClip>("audio",assetName);
+    }
+
+    public async UniTask<Font> LoadFont()
+    {
+        return await LoadObjectAsync<Font>("fonts","shuzi");
+    }
+    #endregion
+    
+    private async UniTaskVoid LoadObject<T>(string bundleName, string assetName,Action<T> action) where T : Object
+    {
+        var go = LoadFromEditorAsset<T>(bundleName, assetName);
+        if (go) action.Invoke(go);
+        
+        if (!loadedBundles.TryGetValue(bundleName, out var bundle))
+        {
+            bundle = await GetBundle(bundleName);
+            if(bundle)
+                loadedBundles.Add(bundleName, bundle);
+        }
+        go = bundle?.LoadAsset<T>(assetName);
+        action.Invoke(go);
+    }
+    
+    private async UniTask<T> LoadObjectAsync<T>(string bundleName, string assetName) where T : Object
     {
         var go = LoadFromEditorAsset<T>(bundleName, assetName);
         if (go) return go;
         
-        if(!loadedBundles.TryGetValue(bundleName, out var bundle))
-            bundle = AssetBundle.LoadFromFile(bundleName);
+        if (!loadedBundles.TryGetValue(bundleName, out var bundle))
+        {
+            bundle = await GetBundle(bundleName);
+            if(bundle)
+                loadedBundles.Add(bundleName, bundle);
+        }
         return bundle?.LoadAsset<T>(assetName);
+    }
+    
+
+    private async UniTask<AssetBundle> GetBundle(string bundleName)
+    {
+        var path = Path.Combine(Application.streamingAssetsPath, "Res", bundleName);
+        using (var uwr = UnityWebRequest.Get(path))
+        {
+            await uwr.SendWebRequest();
+            if (uwr.result == UnityWebRequest.Result.Success)
+            {
+                var data = EncryptUtil.AesDecrypt(uwr.downloadHandler.data);
+                return AssetBundle.LoadFromMemory(data);
+            }
+            Debug.LogError("Failed to load AssetBundle: " + uwr.error);
+            return null;
+        }
     }
     
     public void UnloadBundle(string bundleName)
@@ -63,16 +174,5 @@ public sealed class ResMgr : Singleton<ResMgr>
         {
             Debug.LogError($"资源包未加载: {bundleName}");
         }
-    }
-
-    /// <summary>
-    /// 清空所有资源缓存
-    /// </summary>
-    public void ClearAllResources()
-    {
-        foreach (var bundle in loadedBundles.Values)
-            bundle.Unload(true);
-        loadedBundles.Clear();
-        Debug.Log("所有资源已清理");
     }
 }

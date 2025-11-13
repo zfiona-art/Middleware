@@ -28,37 +28,41 @@ public class UIMain : UIBase
     private Transform trChapter3;
     private Transform trChapter4;
     private Transform trChapter5;
-    
-    private DataLevel dataLevel;
     private int curChapter;
     private int chooseLevel;
 
     public override void OnPostAwake()
     {
-        EventCtrl.RegisterAction(EventDefine.OnCoinModify,RefreshCoin);
-        EventCtrl.RegisterAction(EventDefine.OnLevelModify,RefreshLevel);
+        AddEvent(EventDefine.OnCoinModify,RefreshCoin);
+        AddEvent(EventDefine.OnLevelModify,RefreshLevel);
         var id = GlobalManager.Instance.Avatar;
         if (id == 0)
         {
             id = Random.Range(101, 111);
             GlobalManager.Instance.Avatar = id;
         }
-        imgHead.sprite = Resources.Load<Sprite>("Image/Avatar/#" + id);
-        txtName.text = "游客" + imgHead.sprite.name;
+
+        InitUI();
+    }
+
+    private async void InitUI()
+    {
+        var id = GlobalManager.Instance.Avatar;
+        imgHead.sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("#" + id);
+        txtName.text = "游客#" + id;
         
+        var go = await ResMgr.Instance.LoadPrefabUIAsync("item_level");
         for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
         {
-            var go = Resources.Load<GameObject>("Prefab/UI/item_level");
             Instantiate(go, trLevels).GetComponent<ItemLevel>().Init(trLevels);
         }
-        dataLevel = Resources.Load<DataLevel>("Data/Level");
+        UpdateLevelStars();
     }
     
     public override void Refresh()
     {
         txtCoin.text = GlobalManager.Instance.Coin.ToString();
         txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
-        
         curChapter = GlobalManager.Instance.ChapterId;
         UpdateLevelStars();
         UpdateChapter();
@@ -80,6 +84,7 @@ public class UIMain : UIBase
 
     private void UpdateLevelStars()
     {
+        if(trLevels.childCount == 0) return;
         var oriStars = GlobalManager.Instance.GetLevelStars();
         var newStars = new List<int>();
         var count = GlobalManager.ChapterLevelCnt * (curChapter - 1);
@@ -118,7 +123,7 @@ public class UIMain : UIBase
 
     public void _btnRightClick()
     {
-        if(curChapter == dataLevel.array.Count / GlobalManager.ChapterLevelCnt) return;
+        if(curChapter == GameManager.Instance.GetTotalLevelCnt() / GlobalManager.ChapterLevelCnt) return;
         curChapter++;
         UpdateLevelStars();
         UpdateChapter();
@@ -133,7 +138,7 @@ public class UIMain : UIBase
     {
         GlobalManager.Instance.GameLevel = chooseLevel;
         GameManager.Instance.StartGame();
-        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.ClosePanel(UIPath.main);
         UIManager.Instance.OpenPanel(UIPath.game);
     }
 

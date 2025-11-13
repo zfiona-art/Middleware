@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class AudioMgr : SingletonMono<AudioMgr>
@@ -34,12 +35,12 @@ public class AudioMgr : SingletonMono<AudioMgr>
         SetVoice(PlayerPrefs.GetInt("tog_sound", 1) == 1);
     }
 
-    private AudioClip GetClip(string name)
+    private async UniTask<AudioClip> GetClip(string name)
     {
         name = "audio/" + name;
         if (!audioClipDic.ContainsKey(name))
         {
-            AudioClip clip = Resources.Load<AudioClip>(name);
+            var clip = await ResMgr.Instance.LoadAudioClipsAsync(name);
             audioClipDic.Add(name, clip);
         }
         return audioClipDic[name];
@@ -60,10 +61,10 @@ public class AudioMgr : SingletonMono<AudioMgr>
         }
     }
 
-    public void PlayBg()
+    public async void PlayBg()
     {
         string name = "audio/bg";
-        bg_source.clip = GetClip(name);
+        bg_source.clip = await GetClip(name);
         bg_source.volume = 1;
         bg_source.Play();
     }
@@ -73,11 +74,11 @@ public class AudioMgr : SingletonMono<AudioMgr>
         bg_source.Pause();
     }
 
-    public void PlayClip(string name)
+    public async void PlayClip(string name)
     {
         if (!canVoice) return;
         
-        AudioClip clip = GetClip(name);
+        AudioClip clip = await GetClip(name);
         if(clip == null)
             return;
         for (int i = 0; i < SourceCnt; i++)

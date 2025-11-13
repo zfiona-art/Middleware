@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
-using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -29,19 +27,29 @@ public class GameManager : MonoBehaviour
     public Player player;
     private DataGame dataGame;
     private DataLevel dataLevel;
+    private DataChapter dataChapter;
+    private Ground prefabGround;
+    private Prop prefabProp;
     private int curSkillNum;
     
-    private void Awake()
+    private async void Awake()
     {
         Instance = this;
-        dataGame = Resources.Load<DataGame>("Data/Game");
-        dataLevel = Resources.Load<DataLevel>("Data/Level");
+        await ResMgr.Instance.LoadFont();
+        UIManager.Instance.OpenPanel(UIPath.loading);
+        
+        dataGame = await ResMgr.Instance.LoadDataAsync<DataGame>("Game");
+        dataLevel = await ResMgr.Instance.LoadDataAsync<DataLevel>("Level");
+        dataChapter = await ResMgr.Instance.LoadDataAsync<DataChapter>("Chapter");
+        prefabGround = await ResMgr.Instance.LoadPrefabItemAsync<Ground>("ground");
+        prefabProp = await ResMgr.Instance.LoadPrefabItemAsync<Prop>("prop");
+        var go = await ResMgr.Instance.LoadPrefabItemAsync<Player>("Player");
+        player = Instantiate(go,transform);
+        player.OnDespawn();
         
         SdkManager.Instance.Init();
-        PoolManager.Instance.Init();
         UpgradeManager.Instance.Init();
-        UIManager.Instance.OpenPanel(UIPath.loading);
-        //CreateMap();
+        PoolManager.Instance.Init();
     }
     
     public void StartGame()
@@ -57,56 +65,55 @@ public class GameManager : MonoBehaviour
         var treeCnt = dataGame.boundTreeCnt;
         var panelCnt = GetCurLevelData().groundCnt;
         //生成地图
-        var data = Resources.Load<DataGame>("Data/Game");
-        var data2 = Resources.Load<DataChapter>("Data/Chapter");
-        var ground = Resources.Load<Ground>("Prefab/Game/ground");
-        var point = new Vector2(0, data.panelWidth * (panelCnt + 1) * 0.5f);
+        var point = new Vector2(0, dataGame.panelWidth * (panelCnt + 1) * 0.5f);
         for (var i = 0; i < panelCnt; i++)
         {
-            point.y -= data.panelWidth;
-            point.x = data.panelWidth * (panelCnt + 1) * 0.5f;
+            point.y -= dataGame.panelWidth;
+            point.x = dataGame.panelWidth * (panelCnt + 1) * 0.5f;
             for (var j = 0; j < panelCnt; j++)
             {
-                point.x -= data.panelWidth;
-                var go = Instantiate(ground, rootGrounds);
+                point.x -= dataGame.panelWidth;
+                var go = Instantiate(prefabGround, rootGrounds);
                 go.transform.position = point;
-                go.Init(data2, data.groundPropCnt);
+                go.Init(dataChapter, dataGame.groundPropCnt);
             }
         }
         //生成边界
-        var tree = Resources.Load<Prop>("Prefab/Game/prop");
-        tree.gameObject.layer = LayerMask.NameToLayer("Default");
-        var treeDis = data.panelWidth / dataGame.boundTreeCnt;
+        var treeDis = dataGame.panelWidth / dataGame.boundTreeCnt;
         var cnt = panelCnt * treeCnt;
         //纵向
-        point = new Vector2(data.panelWidth * panelCnt * 0.5f, data.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f);
+        point = new Vector2(dataGame.panelWidth * panelCnt * 0.5f, dataGame.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f);
         for (var i = 0; i < cnt; i++)
         {
             point.y -= treeDis;
-            var go = Instantiate(tree, rootGrounds);
+            var go = Instantiate(prefabProp, rootGrounds);
             go.transform.position = point;
+            go.gameObject.layer = LayerMask.NameToLayer("Default");
         }
-        point = new Vector2(-data.panelWidth * panelCnt * 0.5f, data.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f);
+        point = new Vector2(-dataGame.panelWidth * panelCnt * 0.5f, dataGame.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f);
         for (var i = 0; i < cnt; i++)
         {
             point.y -= treeDis;
-            var go = Instantiate(tree, rootGrounds);
+            var go = Instantiate(prefabProp, rootGrounds);
             go.transform.position = point;
+            go.gameObject.layer = LayerMask.NameToLayer("Default");
         }
         //横向
-        point = new Vector2(data.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f,data.panelWidth * panelCnt * 0.5f);
+        point = new Vector2(dataGame.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f,dataGame.panelWidth * panelCnt * 0.5f);
         for (var i = 0; i < cnt; i++)
         {
             point.x -= treeDis;
-            var go = Instantiate(tree, rootGrounds);
+            var go = Instantiate(prefabProp, rootGrounds);
             go.transform.position = point;
+            go.gameObject.layer = LayerMask.NameToLayer("Default");
         }
-        point = new Vector2(data.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f,-data.panelWidth * panelCnt * 0.5f);
+        point = new Vector2(dataGame.panelWidth * (panelCnt - 1) * 0.5f + treeDis * (treeCnt + 1) * 0.5f,-dataGame.panelWidth * panelCnt * 0.5f);
         for (var i = 0; i < cnt; i++)
         {
             point.x -= treeDis;
-            var go = Instantiate(tree, rootGrounds);
+            var go = Instantiate(prefabProp, rootGrounds);
             go.transform.position = point;
+            go.gameObject.layer = LayerMask.NameToLayer("Default");
         }
     }
     
@@ -118,13 +125,11 @@ public class GameManager : MonoBehaviour
         {
             case GameStatus.Playing:
                 eSpawnHandle.Paused = false;
-                if(player)
-                    player.bSpawnHandle.Paused = false;
+                player.bSpawnHandle.Paused = false;
                 break;
             case GameStatus.Paused:
                 eSpawnHandle.Paused = true;
-                if(player)
-                    player.bSpawnHandle.Paused = true;
+                player.bSpawnHandle.Paused = true;
                 break;
             case GameStatus.ReStart:
                 SwitchState(GameStatus.End);
@@ -141,20 +146,19 @@ public class GameManager : MonoBehaviour
                 break;
             case GameStatus.End:
                 eSpawnHandle.Cancel();
-                player.bSpawnHandle.Cancel();
-                PoolManager.Instance.Clear();
                 UpgradeManager.Instance.Reset();
                 curSkillNum = 0;
                 roundId = 0;
                 curDeadEnemyNum = 0;
                 curLiveEnemyNum = 0;
-                player.gameObject.DestroySelf();
-                rootEnemies.gameObject.DestroyAllChild();
-                rootEnergies.gameObject.DestroyAllChild();
-                rootBullets.gameObject.DestroyAllChild();
-                rootSkills.gameObject.DestroyAllChild();
-                rootGrounds.gameObject.DestroyAllChild();
-                rootProps.gameObject.DestroyAllChild();
+                player.OnDespawn();
+                PoolManager.Instance.Clear();
+                // rootEnemies.gameObject.DestroyAllChild();
+                // rootEnergies.gameObject.DestroyAllChild();
+                // rootBullets.gameObject.DestroyAllChild();
+                // rootSkills.gameObject.DestroyAllChild();
+                // rootGrounds.gameObject.DestroyAllChild();
+                // rootProps.gameObject.DestroyAllChild();
                 break;
             case GameStatus.Next:
                 SwitchState(GameStatus.End);
@@ -165,7 +169,7 @@ public class GameManager : MonoBehaviour
     
     private void TryGenPlayer()
     {
-        player = PoolManager.Instance.Get<Player>("Player",transform);
+        player.OnSpawn();
         virtualCamera.Follow = player.transform;
         virtualCamera.LookAt = player.transform;
         
@@ -183,7 +187,7 @@ public class GameManager : MonoBehaviour
         curLiveEnemyNum = 0;
         foreach (var enemy in GetCurLevelData().rounds[roundId].enemies)
         {
-            var go =  PoolManager.Instance.Get<Enemy>("enemy" + enemy.id,rootEnemies);
+            var go = PoolManager.Instance.Get<Enemy>("enemy" + enemy.id,rootEnemies);
             go.transform.position = new Vector3(enemy.x, enemy.y);
             curLiveEnemyNum++;
         }
@@ -239,6 +243,16 @@ public class GameManager : MonoBehaviour
     public DataLevel.Level GetCurLevelData()
     {
         return dataLevel.array[GlobalManager.Instance.GameLevel - 1];
+    }
+
+    public int GetTotalLevelCnt()
+    {
+        return dataLevel.array.Count;
+    }
+
+    public int GetMaxTickTime()
+    {
+        return dataGame.maxTimeSeconds;
     }
     
     public Coroutine StartRequestDirect(IEnumerator http)

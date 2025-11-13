@@ -19,9 +19,9 @@ public class ItemRank : MonoBehaviour
         txtRank = transform.Find("txtRank").GetComponent<Text>();
     }
 
-    public void SetValue(RankData data,int rank)
+    public async void SetValue(RankData data,int rank)
     {
-        imgHead.sprite = Resources.Load<Sprite>("Image/Avatar/#" + data.id);
+        imgHead.sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("#" + data.id);
         txtName.text = data.name;
         txtScore.text = data.score.ToString();
         txtRank.text = rank == 0 ? "暂未上榜" : rank.ToString();

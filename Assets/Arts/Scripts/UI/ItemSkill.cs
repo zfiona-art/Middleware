@@ -17,10 +17,10 @@ public class ItemSkill : MonoBehaviour
         btn.onClick.AddListener(OnBtnClick);
     }
 
-    public void SetSkill(int i)
+    public async void SetSkill(int i)
     {
         id = i;
-        img.sprite = Resources.Load<Sprite>("Image/Skill/#" + i);
+        img.sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("skill" + i);
     }
 
     public void OnBtnClick()

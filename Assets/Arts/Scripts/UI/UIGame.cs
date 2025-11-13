@@ -18,24 +18,20 @@ public class UIGame : UIBase
 
     private readonly vp_Timer.Handle timerHandle = new ();
     private int curLeftTime;
-    private DataGame dataGame;
+    
     public override void OnPostAwake()
     {
-        dataGame = Resources.Load<DataGame>("Data/Game");
-        EventCtrl.RegisterAction(EventDefine.OnEnemyKill,OnEnemyKill);
-        EventCtrl.RegisterAction(EventDefine.OnEnergyGet,OnEnergyGet);
-        EventCtrl.RegisterAction(EventDefine.OnGameLevelUp,OnGameLevelUp);
-        EventCtrl.RegisterAction(EventDefine.OnSkillGet,OnSkillGet);
-        EventCtrl.RegisterAction(EventDefine.OnDoubleClick,OnDoubleClick);
+        AddEvent(EventDefine.OnEnemyKill,OnEnemyKill);
+        AddEvent(EventDefine.OnEnergyRefresh,OnEnergyRefresh);
+        AddEvent(EventDefine.OnGameLevelUp,OnGameLevelUp);
+        AddEvent(EventDefine.OnSkillGet,OnSkillGet);
+        AddEvent(EventDefine.OnDoubleClick,OnDoubleClick);
         btnSet.onClick.AddListener(OnBtnSetClick);
     }
 
     public override void Refresh()
     {
-        OnEnemyKill(null);
-        OnEnergyGet(null);
-        
-        TickTime(dataGame.maxTimeSeconds);
+        TickTime(GameManager.Instance.GetMaxTickTime());
         txtGameLevel.text = $"关卡:{GlobalManager.Instance.GameLevel}";
     }
 
@@ -64,14 +60,14 @@ public class UIGame : UIBase
         UIManager.Instance.OpenPanel(UIPath.setting);
     }
 
-    private void OnSkillGet(object data)
+    private async void OnSkillGet(object data)
     {
         var evtData = (EvtData)data;
         if (evtData == null) return;
         
         var id = evtData.GetData<int>();
-        var go = Resources.Load<ItemSkill>("Prefab/UI/item_skill");
-        Instantiate(go, rootSkill).SetSkill(id);
+        var go = await ResMgr.Instance.LoadPrefabUIAsync("item_skill");
+        Instantiate(go, rootSkill).GetComponent<ItemSkill>().SetSkill(id);
     }
 
     private void OnDoubleClick(object data)
@@ -88,18 +84,10 @@ public class UIGame : UIBase
         txtSchedule.text = string.Format("关卡进度{0}%", Mathf.FloorToInt(slideSchedule.value * 100));
     }
     
-    private void OnEnergyGet(object data)
+    private void OnEnergyRefresh(object data)
     {
-        if (GameManager.Instance.player)
-        {
-            slideExp.value = GameManager.Instance.player.GetEnergyPro();
-            txtLevel.text = GameManager.Instance.player.level.ToString();
-        }
-        else
-        {
-            slideExp.value = 0;
-            txtLevel.text = "1";
-        }
+        slideExp.value = GameManager.Instance.player.GetEnergyPro();
+        txtLevel.text = GameManager.Instance.player.level.ToString();
     }
     
     private void OnGameLevelUp(object data)

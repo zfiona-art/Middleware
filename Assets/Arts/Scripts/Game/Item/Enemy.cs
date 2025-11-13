@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Enemy : PoolItem
 {
-    [SerializeField] protected DataEnemy data;
-
+    [SerializeField] private int id;
+    protected DataEnemy data;
     public static bool IsActive;
     private float health; 
     private Animator animator;
@@ -18,7 +18,6 @@ public class Enemy : PoolItem
     private Vector3 direction;
     private float attackTime;
     
-    
     private void Awake()
     {
         direction = Vector3.one;
@@ -26,8 +25,9 @@ public class Enemy : PoolItem
         rigid = GetComponent<Rigidbody2D>();
     }
 
-    public override void OnSpawn()
+    public override async void OnSpawn()
     {
+        data = await ResMgr.Instance.LoadDataAsync<DataEnemy>("Enemy" + id);
         base.OnSpawn();
         health = data.health + GameManager.Instance.GetCurLevelData().healthAdd;
         animator.SetBool(runHash,false);

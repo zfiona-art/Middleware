@@ -23,14 +23,27 @@ public class BuildTool : EditorWindow
         public BundleInfo[] bundles;
     }
     
-    private static string folderPath = "Assets/Arts"; // 默认路径
+    private static string folderPath = "Assets/Arts/AbRoot"; // 默认路径
     private static string outputPath = "./BuildBundles"; // 确保此路径有效
     private static string currentVersionInfo; // 显示当前版本信息
+    private static string StreamingAssetsPath => Path.Combine(Application.dataPath, "StreamingAssets","Res");
 
+    [MenuItem("Tools/资源打包/AssetBundle Clear")]
+    public static void ClearAssetBundleName()
+    {
+        var allAssetBundleName = AssetDatabase.GetAllAssetBundleNames();
+        foreach(var name in allAssetBundleName)
+        {
+            AssetDatabase.RemoveAssetBundleName(name,true);
+        }
+        AssetDatabase.RemoveUnusedAssetBundleNames();
+        AssetDatabase.Refresh();
+    }
+    
     [MenuItem("Tools/资源打包/AssetBundle Builder")]
     public static void ShowWindow()
     {
-        currentVersionInfo = GetCurrentVersionInfo(outputPath);
+        currentVersionInfo = GetCurrentVersionInfo();
         GetWindow<BuildTool>("AssetBundle Builder");
     }
 
@@ -72,9 +85,10 @@ public class BuildTool : EditorWindow
             Debug.LogError($"The folder {folderPath} does not exist.");
             return;
         }
-
-        string[] assetTypes = new[] { "*.spriteatlas", "*.prefab", "*.csv", "*.mp4", "*.wav", "*.ttf" };
+        
+        var assetTypes = new[] { "*.spriteatlasv2", "*.prefab", "*.mat", "*.asset", "*.wav", "*.ttf" };
         var assetPaths = assetTypes.SelectMany(assetType => Directory.GetFiles(folderPath, assetType, SearchOption.AllDirectories)).ToArray();
+        
         var bundleNames = GetBundleNames(assetPaths);
         // 设置bundle名字
         SetAssetBundleNames(assetPaths, bundleNames);
@@ -83,26 +97,25 @@ public class BuildTool : EditorWindow
         // 构建 AssetBundles
         foreach (var bundleName in AssetDatabase.GetAllAssetBundleNames())
         {
-            string bundlePath = Path.Combine(outputPath, bundleName);
+            var bundlePath = Path.Combine(outputPath, bundleName);
             if (File.Exists(bundlePath))
             {
-                string hash = ComputeFileHash(bundlePath);
+                var hash = ComputeFileHash(bundlePath);
                 bundles.Add(new BundleInfo { name = bundleName, version = Application.version, hash = hash });
             }
         }
       
         // 打包 AssetBundles
         BuildAssetBundles(outputPath);
-
-        EncryptAssetBundle(outputPath);
-
         // 更新版本信息
         UpdateVersionFile(bundles, outputPath);
         CopyAssetBundlesToStreamingAssets(outputPath);
+        //加密
+        EncryptAssetBundle(StreamingAssetsPath);
         Debug.Log("AssetBundles built successfully.");
 
         // 更新当前版本信息
-        currentVersionInfo = GetCurrentVersionInfo(outputPath);
+        currentVersionInfo = GetCurrentVersionInfo();
         AssetDatabase.Refresh();
     }
 
@@ -113,7 +126,7 @@ public class BuildTool : EditorWindow
     private static void EncryptAssetBundle(string bundlePath)
     {
         // 获取所有文件
-        string[] files = Directory.GetFiles(bundlePath);
+        var files = Directory.GetFiles(bundlePath);
         if (files.Length == 0)
         {
             Debug.LogWarning("未找到任何 AssetBundle 文件在路径: " + bundlePath);
@@ -154,24 +167,16 @@ public class BuildTool : EditorWindow
     /// <param name="bundleNames"></param>
     private static void SetAssetBundleNames(string[] assetPaths, Dictionary<(string DirectoryName, string FileType), string> bundleNames)
     {
-        foreach (string assetPath in assetPaths)
+        foreach (var assetPath in assetPaths)
         {
-            string relativePath = assetPath.Substring(assetPath.IndexOf("Assets"));
-            string parentFolderName = Path.GetFileName(Path.GetDirectoryName(assetPath));
-            string fileType = Path.GetExtension(assetPath).TrimStart('.');
-
+            var relativePath = assetPath.Substring(assetPath.IndexOf("Assets"));
+            var parentFolderName = Path.GetFileName(Path.GetDirectoryName(assetPath));
+            var fileType = Path.GetExtension(assetPath).TrimStart('.');
+            
             if (bundleNames.TryGetValue((DirectoryName: parentFolderName, FileType: fileType), out string assetBundleName))
             {
-                AssetImporter assetImporter = AssetImporter.GetAtPath(relativePath);
-                if (assetImporter != null)
-                {
-                    assetImporter.SetAssetBundleNameAndVariant(assetBundleName, "");
-                   // Debug.Log($"Set AssetBundle for {relativePath} to {assetBundleName}");
-                }
-                else
-                {
-                    Debug.LogError($"Failed to get AssetImporter for {relativePath}");
-                }
+                var assetImporter = AssetImporter.GetAtPath(relativePath);
+                assetImporter?.SetAssetBundleNameAndVariant(assetBundleName, "");
             }
         }
     }
@@ -191,15 +196,15 @@ public class BuildTool : EditorWindow
 
     private static void CopyAssetBundlesToStreamingAssets(string sourcePath)
     {
-        var streamingAssetsPath = Path.Combine(Application.dataPath, "StreamingAssets","Res");
-        if (Directory.Exists(streamingAssetsPath))
-            Directory.Delete(streamingAssetsPath,true);
-        Directory.CreateDirectory(streamingAssetsPath);
+        
+        if (Directory.Exists(StreamingAssetsPath))
+            Directory.Delete(StreamingAssetsPath,true);
+        Directory.CreateDirectory(StreamingAssetsPath);
 
         foreach (var file in Directory.GetFiles(sourcePath))
         {
             var fileName = Path.GetFileName(file);
-            var destinationFile = Path.Combine(streamingAssetsPath, fileName);
+            var destinationFile = Path.Combine(StreamingAssetsPath, fileName);
             if (fileName.EndsWith(".manifest"))
                 continue;
             
@@ -217,7 +222,7 @@ public class BuildTool : EditorWindow
     {        
         var versionData = new VersionData { bundles = bundleInfos.ToArray() };
         var json = JsonConvert.SerializeObject(versionData, Formatting.Indented);
-        File.WriteAllText(Path.Combine(path, "version.json"), EncryptUtil.AesEncrypt(json));
+        File.WriteAllText(Path.Combine(path, "version.json"), json);
         Debug.Log("Version file updated.");
     }
 
@@ -233,13 +238,14 @@ public class BuildTool : EditorWindow
     }
     
     // 获取当前版本信息
-    private static string GetCurrentVersionInfo(string path)
+    private static string GetCurrentVersionInfo()
     {
-        //解密
-        if (File.Exists(Path.Combine(path, "version.json")))
+        var path = Path.Combine(StreamingAssetsPath, "version.json");
+        if (File.Exists(path))
         {
-            string data = EncryptUtil.AesDecrypt(File.ReadAllText(Path.Combine(path, "version.json")));
-            var versionData = JsonConvert.DeserializeObject<VersionData>(data);
+            var data = EncryptUtil.AesDecrypt(File.ReadAllBytes(path));
+            var josn = System.Text.Encoding.UTF8.GetString(data);
+            var versionData = JsonConvert.DeserializeObject<VersionData>(josn);
             return string.Join("\n", versionData.bundles.Select(b => $"{b.name}: {b.version}, Hash: {b.hash}"));
         }
         return "没有可用的版本信息";

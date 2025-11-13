@@ -61,7 +61,7 @@ public class ItemSign : MonoBehaviour
         GlobalManager.Instance.SignDay++;
         if (GlobalManager.Instance.SignDay == 7)
             GlobalManager.Instance.SignDay = 0;
-        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.ClosePanel(UIPath.sign);
         ShowReward(1);
     }
 
@@ -72,7 +72,7 @@ public class ItemSign : MonoBehaviour
         GlobalManager.Instance.SignDay++;
         if (GlobalManager.Instance.SignDay == 7)
             GlobalManager.Instance.SignDay = 0;
-        UIManager.Instance.CloseTopPanel();
+        UIManager.Instance.ClosePanel(UIPath.sign);
         ShowReward(2);
     }
 
