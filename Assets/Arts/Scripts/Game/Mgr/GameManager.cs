@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
         SdkManager.Instance.Init();
         UpgradeManager.Instance.Init();
         PoolManager.Instance.Init();
+        UIManager.Instance.Init();
     }
     
     public void StartGame()

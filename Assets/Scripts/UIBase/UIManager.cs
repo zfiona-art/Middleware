@@ -17,8 +17,15 @@ public class UIManager: Singleton<UIManager>
 {
     private static Dictionary<string, UIBase> uiDict = new Dictionary<string, UIBase>();
     private static Transform uiRootTr = null;
+    public static bool IsAsyncOk;
+    public override async void Init()
+    {
+        IsAsyncOk = false;
+        await ResMgr.Instance.LoadPrefabUIAsync(UIPath.main);
+        await ResMgr.Instance.LoadPrefabUIAsync(UIPath.game);
+        IsAsyncOk = true;
+    }
 
-    // 设置面板状态
     private void SetPanelStatus(UIBase panel, UISTATUS status,object data = null)
     {
         if (panel == null)
@@ -60,7 +67,15 @@ public class UIManager: Singleton<UIManager>
         if (panel)
             SetPanelStatus(panel, UISTATUS.STATUS_SHOW, data);
         else
-            ResMgr.Instance.LoadPrefabUI(panelKey, Register, data);
+        {
+            if(panelKey != UIPath.loading)
+                ResMgr.Instance.LoadPrefabUI(panelKey, Register, data);
+            else
+            {
+                var go = Resources.Load<GameObject>(panelKey);
+                Register(go, data);
+            }
+        }
     }
     
     private void Register(GameObject panelGo,object data)

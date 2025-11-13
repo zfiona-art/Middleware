@@ -23,7 +23,7 @@ public class UILoading : UIBase
         curTime += Time.deltaTime;
         slider.value = curTime / TotalTime;
         txt.text = $"{Mathf.FloorToInt(curTime / TotalTime * 100)}%";
-        if (curTime > TotalTime && PoolManager.IsAsyncOk)
+        if (curTime > TotalTime && PoolManager.IsAsyncOk && UIManager.IsAsyncOk)
         {
             isLoading = false;
             UIManager.Instance.ClosePanel(UIPath.loading,true);
