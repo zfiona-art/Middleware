@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class UIWin : UIBase
 {
@@ -12,7 +13,6 @@ public class UIWin : UIBase
     private Button btnAd;
     private Button btnNext;
     private Button btnBack;
-    private Queue<Transform> trQueue = new Queue<Transform>();
     private Addition additionCache;
 
     public override void Refresh()
@@ -25,28 +25,47 @@ public class UIWin : UIBase
 
     private void CheckAddition()
     {
-        additionCache = UpgradeManager.Instance.addition;
-        trQueue.Clear();
+        additionCache = new Addition();
+        var max = GlobalManager.Instance.GameLevel % 10 > 5 ? 6 : 3;
         foreach (Transform child in trContent)
         {
-            child.gameObject.SetActive(false);
-            trQueue.Enqueue(child);
+            var key = (UpgradeManager.EUpgradeItem)Random.Range(0, 6);
+            child.GetChild(0).GetComponent<Text>().text = GetInfo(key);
+            child.GetChild(1).GetComponent<Text>().text = $"+{Random.Range(1,max)}%";
         }
-        
-        SetItemValue("永久生命值", additionCache.maxHealth);
-        SetItemValue("永久移动速度", additionCache.moveSpeed);
-        SetItemValue("永久攻击速度", additionCache.fireSpeed);
-        SetItemValue("永久攻击伤害", additionCache.bDamage);
-        SetItemValue("永久尖叫鸡伤害", additionCache.cDamage);
     }
 
-    private void SetItemValue(string value,int count)
+    private string GetInfo(UpgradeManager.EUpgradeItem item)
     {
-        if(trQueue.Count == 0 || count == 0) return;
-        var item = trQueue.Dequeue();
-        item.GetChild(0).GetComponent<Text>().text = value;
-        item.GetChild(1).GetComponent<Text>().text = "+" + count;
-        item.gameObject.SetActive(true);
+        var describe = "";
+        switch (item)
+        {
+            case UpgradeManager.EUpgradeItem.MaxHealth:
+                describe = "永久生命值";
+                additionCache.maxHealth = 1;
+                break;
+            case UpgradeManager.EUpgradeItem.MoveSpeed:
+                describe = "永久移动速度";
+                additionCache.moveSpeed = 1;
+                break;
+            case UpgradeManager.EUpgradeItem.FireSpeed:
+                describe = "永久攻击速度";
+                additionCache.fireSpeed = 1;
+                break;
+            case UpgradeManager.EUpgradeItem.BulletDistance:
+                describe = "永久攻击距离";
+                additionCache.bDistance = 1;
+                break;
+            case UpgradeManager.EUpgradeItem.BulletDamage:
+                describe = "永久攻击伤害";
+                additionCache.bDamage = 1;
+                break;
+            case UpgradeManager.EUpgradeItem.CircleDamage:
+                describe = "永久尖叫鸡伤害";
+                additionCache.cDamage = 1;
+                break;
+        }
+        return describe;
     }
     
     public void _btnAdClick()
