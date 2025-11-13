@@ -26,6 +26,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
             {EUpgradeItem.Skill1,5},
             {EUpgradeItem.Skill2,5},
             {EUpgradeItem.Skill3,5},
+            {EUpgradeItem.Skill4,5},
         };
         addition = new Addition();
         if (GlobalManager.Instance.GameLevel == 1)
@@ -89,6 +90,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.Skill3:
                 describe = "得到1个地刺技能";
                 break;
+            case EUpgradeItem.Skill4:
+                describe = "得到1个闪电技能";
+                break;
         }
         return describe;
     }
@@ -131,6 +135,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.Skill3:
                 OnSkillGet(3);
                 break;
+            case EUpgradeItem.Skill4:
+                OnSkillGet(4);
+                break;
         }
         upgradeDic[item]--;
     }
@@ -152,6 +159,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
         Skill1,
         Skill2,
         Skill3,
+        Skill4,
     }
 }
 

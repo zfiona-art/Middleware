@@ -229,7 +229,7 @@ public class GameManager : MonoBehaviour
         if (!go) return false;
         
         go.transform.position = ePos;
-        go.Init(Random.Range(1, 4));
+        go.Init(Random.Range(1, 5));
         curSkillNum++;
         return true;
     }

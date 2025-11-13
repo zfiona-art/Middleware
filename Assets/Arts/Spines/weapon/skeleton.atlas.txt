@@ -1,0 +1,10 @@
+skeleton.png
+size:228,228
+filter:Linear,Linear
+pma:true
+guangzhao
+bounds:2,2,115,115
+offsets:1,0,117,116
+huoqiu
+bounds:2,119,139,107
+offsets:1,0,140,107

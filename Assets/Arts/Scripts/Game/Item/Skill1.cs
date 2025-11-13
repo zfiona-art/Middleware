@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Skill1 : Weapon
 {
+    private const int ItemCnt = 4;
     private const float MoveSpeed = 5;
     private readonly List<Vector3> oriPositions = new ()
     {
@@ -28,7 +29,7 @@ public class Skill1 : Weapon
     {
         base.OnSpawn();
         isHarmAnim = false;
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < ItemCnt; i++)
         {
             transform.GetChild(i).localScale = Vector3.one;
             transform.GetChild(i).localPosition = oriPositions[i];
@@ -37,7 +38,7 @@ public class Skill1 : Weapon
 
     void Update()
     {
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < ItemCnt; i++)
         {
             transform.GetChild(i).Translate( MoveSpeed * Time.deltaTime * moveDirs[i]);
         }

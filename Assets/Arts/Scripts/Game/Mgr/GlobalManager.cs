@@ -6,6 +6,7 @@ using UnityEngine;
 public class GlobalManager : Singleton<GlobalManager>
 {
     public const int ChapterLevelCnt = 10;
+    public const int MaxFireDistance = 8;
     public int GameLevel
     {
         get => PlayerPrefs.GetInt("GameLevel", 1);

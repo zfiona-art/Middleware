@@ -104,7 +104,7 @@ public class Player : PoolItem
 
     private float GetDistance()
     {
-        return Math.Min(data.bulletDistance + UpgradeManager.Instance.addition.bDistance,8);
+        return Math.Min(data.bulletDistance + UpgradeManager.Instance.addition.bDistance,GlobalManager.MaxFireDistance);
     }
     
 

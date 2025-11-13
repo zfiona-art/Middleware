@@ -85,26 +85,20 @@ public class Enemy : PoolItem
         if (collision.CompareTag("Weapon"))
         {
             var weapon = collision.GetComponentInParent<Weapon>(true);
-            health -= weapon.damage;
+            BeHarmed(weapon.damage);
             weapon.OnHarmOver(collision);
         }
-        else
-        {
-            return;
-        }
-        
-        if (health <= 0)
-            DoDead();
-        else
-            DoHarm();
     }
 
     
-    void DoHarm()
+    public void BeHarmed(float damage)
     {
         IsActive =  true;
         animator.SetBool(runHash,true);
         animator.SetTrigger(harmHash);
+        health -= damage;
+        if(health <= 0)
+            DoDead();
     }
 
     void DoDead()
