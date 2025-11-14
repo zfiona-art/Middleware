@@ -23,10 +23,11 @@ public class UpgradeManager : Singleton<UpgradeManager>
             {EUpgradeItem.BulletDamage,10},
             {EUpgradeItem.CircleCount,4},
             {EUpgradeItem.CircleDamage,10},
-            {EUpgradeItem.Skill1,5},
-            {EUpgradeItem.Skill2,5},
-            {EUpgradeItem.Skill3,5},
-            {EUpgradeItem.Skill4,5},
+            {EUpgradeItem.Skill1,3},
+            {EUpgradeItem.Skill2,3},
+            {EUpgradeItem.Skill3,3},
+            {EUpgradeItem.Skill4,3},
+            {EUpgradeItem.Skill5,3},
         };
         addition = new Addition();
         if (GlobalManager.Instance.GameLevel == 1)
@@ -93,6 +94,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.Skill4:
                 describe = "得到1个闪电技能";
                 break;
+            case EUpgradeItem.Skill5:
+                describe = "得到1个雷环技能";
+                break;
         }
         return describe;
     }
@@ -138,6 +142,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.Skill4:
                 OnSkillGet(4);
                 break;
+            case EUpgradeItem.Skill5:
+                OnSkillGet(5);
+                break;
         }
         upgradeDic[item]--;
     }
@@ -160,6 +167,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
         Skill2,
         Skill3,
         Skill4,
+        Skill5,
     }
 }
 

@@ -25,22 +25,25 @@ public class UIUpgrade : UIBase
 
     public void _btn1Click()
     {
-        UpgradeManager.Instance.SetItem(describes[0]);
         UIManager.Instance.ClosePanel(UIPath.upgrade);
         GameManager.Instance.SwitchState(GameStatus.Playing);
+        if(describes.Count < 3) return;
+        UpgradeManager.Instance.SetItem(describes[0]);
     }
 
     public void _btn2Click()
     {
-        UpgradeManager.Instance.SetItem(describes[1]);
         UIManager.Instance.ClosePanel(UIPath.upgrade);
         GameManager.Instance.SwitchState(GameStatus.Playing);
+        if(describes.Count < 3) return;
+        UpgradeManager.Instance.SetItem(describes[1]);
     }
 
     public void _btn3Click()
     {
-        UpgradeManager.Instance.SetItem(describes[2]);
         UIManager.Instance.ClosePanel(UIPath.upgrade);
         GameManager.Instance.SwitchState(GameStatus.Playing);
+        if(describes.Count < 3) return;
+        UpgradeManager.Instance.SetItem(describes[2]);
     }
 }

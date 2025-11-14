@@ -21,8 +21,10 @@ public class UIManager: Singleton<UIManager>
     public override async void Init()
     {
         IsAsyncOk = false;
-        await ResMgr.Instance.LoadPrefabUIAsync(UIPath.main);
-        await ResMgr.Instance.LoadPrefabUIAsync(UIPath.game);
+        var go = await ResMgr.Instance.LoadPrefabUIAsync(UIPath.main);
+        Register(go);
+        go = await ResMgr.Instance.LoadPrefabUIAsync(UIPath.game);
+        Register(go);
         IsAsyncOk = true;
     }
 
@@ -64,21 +66,26 @@ public class UIManager: Singleton<UIManager>
     public void OpenPanel(string panelKey,object data = null)
     {
         var panel = GetPanel(panelKey);
-        if (panel)
-            SetPanelStatus(panel, UISTATUS.STATUS_SHOW, data);
-        else
+        if (!panel)
         {
-            if(panelKey != UIPath.loading)
-                ResMgr.Instance.LoadPrefabUI(panelKey, Register, data);
+            if (panelKey != UIPath.loading)
+            {
+                ResMgr.Instance.LoadPrefabUI(panelKey, go =>
+                {
+                    panel = Register(go);
+                    SetPanelStatus(panel, UISTATUS.STATUS_SHOW,data);
+                });
+            }
             else
             {
                 var go = Resources.Load<GameObject>(panelKey);
-                Register(go, data);
+                panel = Register(go);
             }
         }
+        SetPanelStatus(panel, UISTATUS.STATUS_SHOW,data);
     }
     
-    private void Register(GameObject panelGo,object data)
+    private UIBase Register(GameObject panelGo)
     {
         var key =  panelGo.name;
         UIBase panel = null;
@@ -96,7 +103,7 @@ public class UIManager: Singleton<UIManager>
             panel.panelName = key;
         }
         uiDict.TryAdd(key, panel);
-        SetPanelStatus(panel, UISTATUS.STATUS_SHOW,data); 
+        return panel;
     }
     
     public void ClosePanel(string panelKey, bool bMove = false)

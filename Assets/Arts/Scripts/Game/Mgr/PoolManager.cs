@@ -46,6 +46,7 @@ public class PoolManager : Singleton<PoolManager>
         await RegisterPool("skill2", GameManager.Instance.rootSkills);
         await RegisterPool("skill3", GameManager.Instance.rootSkills);
         await RegisterPool("skill4", GameManager.Instance.rootSkills);
+        await RegisterPool("skill5", GameManager.Instance.rootSkills);
         IsAsyncOk = true;
     }
 

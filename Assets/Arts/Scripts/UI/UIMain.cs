@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -41,20 +42,21 @@ public class UIMain : UIBase
             id = Random.Range(101, 111);
             GlobalManager.Instance.Avatar = id;
         }
-
-        InitUI();
     }
 
-    private async void InitUI()
+    private async UniTask InitUI()
     {
         var id = GlobalManager.Instance.Avatar;
-        imgHead.sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("#" + id);
+        imgHead.sprite = await ResMgr.Instance.LoadSpriteAsync("#" + id);
         txtName.text = "游客#" + id;
         
         var go = await ResMgr.Instance.LoadPrefabUIAsync("item_level");
-        for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
+        if (trLevels.childCount == 0)
         {
-            Instantiate(go, trLevels).GetComponent<ItemLevel>().Init(trLevels);
+            for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
+            {
+                Instantiate(go, trLevels).GetComponent<ItemLevel>().Init(trLevels);
+            }
         }
         UpdateLevelStars();
     }
@@ -64,7 +66,7 @@ public class UIMain : UIBase
         txtCoin.text = GlobalManager.Instance.Coin.ToString();
         txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
         curChapter = GlobalManager.Instance.ChapterId;
-        UpdateLevelStars();
+        InitUI();
         UpdateChapter();
     }
 
@@ -84,7 +86,6 @@ public class UIMain : UIBase
 
     private void UpdateLevelStars()
     {
-        if(trLevels.childCount == 0) return;
         var oriStars = GlobalManager.Instance.GetLevelStars();
         var newStars = new List<int>();
         var count = GlobalManager.ChapterLevelCnt * (curChapter - 1);

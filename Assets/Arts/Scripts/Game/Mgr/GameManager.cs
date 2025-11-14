@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
     private async void Awake()
     {
         Instance = this;
-        await ResMgr.Instance.LoadFont();
         UIManager.Instance.OpenPanel(UIPath.loading);
         
         dataGame = await ResMgr.Instance.LoadDataAsync<DataGame>("Game");

@@ -8,7 +8,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.U2D;
-using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
 public class AssetBundleCache
@@ -57,23 +56,23 @@ public sealed class ResMgr : Singleton<ResMgr>
             action.Invoke(go.GetComponent<T>());
         });
     }
-    public void LoadPrefabUI(string assetName,Action<GameObject,object> action,object data)
+    public void LoadPrefabUI(string assetName,Action<GameObject> action)
     {
         LoadObject<GameObject>("ui",assetName, go =>
         {
             if (go == null || action == null)
                 return;
-            action.Invoke(go,data);
+            action.Invoke(go);
         });
     }
 
-    public void LoadAtlasSprite(string assetName,Action<Sprite> action)
+    public void LoadSprite(string assetName,Action<Sprite> action)
     {
-        LoadObject<SpriteAtlas>("image","image", atlas =>
+        LoadObject<Sprite>("image",assetName, s =>
         {
-            if(atlas == null || action == null)
+            if(s == null || action == null)
                 return;
-            action.Invoke(atlas.GetSprite(assetName));
+            action.Invoke(s);
         });
     }
 
@@ -100,42 +99,40 @@ public sealed class ResMgr : Singleton<ResMgr>
         return await LoadObjectAsync<GameObject>("ui",assetName);
     }
 
-    public async UniTask<Sprite> LoadAtlasSpriteAsync(string assetName)
+    public async UniTask<Sprite> LoadSpriteAsync(string assetName)
     {
-        var atlas = await LoadObjectAsync<SpriteAtlas>("image","image");
-        return atlas?.GetSprite(assetName);
+        return await LoadObjectAsync<Sprite>("image",assetName);
     }
     public async UniTask<AudioClip> LoadAudioClipsAsync(string assetName)
     {
         return await LoadObjectAsync<AudioClip>("audio",assetName);
     }
-
-    public async UniTask<Font> LoadFont()
-    {
-        return await LoadObjectAsync<Font>("fonts","shuzi");
-    }
+    
     #endregion
     
-    private async UniTaskVoid LoadObject<T>(string bundleName, string assetName,Action<T> action) where T : Object
+    private async UniTask LoadObject<T>(string bundleName, string assetName,Action<T> action) where T : Object
     {
+#if UNITY_EDITOR && !Unity_PathStreamingAb
         var go = LoadFromEditorAsset<T>(bundleName, assetName);
-        if (go) action.Invoke(go);
-        
+        action.Invoke(go);
+#else
         if (!loadedBundles.TryGetValue(bundleName, out var bundle))
         {
             bundle = await GetBundle(bundleName);
             if(bundle)
                 loadedBundles.Add(bundleName, bundle);
         }
-        go = bundle?.LoadAsset<T>(assetName);
+        var go = bundle?.LoadAsset<T>(assetName);
         action.Invoke(go);
+#endif
     }
     
     private async UniTask<T> LoadObjectAsync<T>(string bundleName, string assetName) where T : Object
     {
+#if UNITY_EDITOR && !Unity_PathStreamingAb
         var go = LoadFromEditorAsset<T>(bundleName, assetName);
-        if (go) return go;
-        
+        return go;
+#else  
         if (!loadedBundles.TryGetValue(bundleName, out var bundle))
         {
             bundle = await GetBundle(bundleName);
@@ -143,6 +140,7 @@ public sealed class ResMgr : Singleton<ResMgr>
                 loadedBundles.Add(bundleName, bundle);
         }
         return bundle?.LoadAsset<T>(assetName);
+#endif
     }
     
 

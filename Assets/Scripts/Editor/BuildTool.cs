@@ -86,7 +86,7 @@ public class BuildTool : EditorWindow
             return;
         }
         
-        var assetTypes = new[] { "*.spriteatlasv2", "*.prefab", "*.mat", "*.asset", "*.wav", "*.ttf" };
+        var assetTypes = new[] { "*.png", "*.prefab", "*.mat", "*.asset", "*.wav", "*.ttf" };
         var assetPaths = assetTypes.SelectMany(assetType => Directory.GetFiles(folderPath, assetType, SearchOption.AllDirectories)).ToArray();
         
         var bundleNames = GetBundleNames(assetPaths);

@@ -25,7 +25,7 @@ public class Energy : PoolItem
     public async void Init(int id)
     {
         var child = transform.GetChild(0);
-        child.GetComponent<SpriteRenderer>().sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("skill" + id);
+        child.GetComponent<SpriteRenderer>().sprite = await ResMgr.Instance.LoadSpriteAsync("skill" + id);
         child.transform.localScale = Vector3.one * (id == 0 ? 1 : 0.5f);
         curId = id;
     }

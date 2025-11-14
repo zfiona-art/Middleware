@@ -20,7 +20,7 @@ public class ItemSkill : MonoBehaviour
     public async void SetSkill(int i)
     {
         id = i;
-        img.sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("skill" + i);
+        img.sprite = await ResMgr.Instance.LoadSpriteAsync("skill" + i);
     }
 
     public void OnBtnClick()

@@ -21,7 +21,7 @@ public class ItemRank : MonoBehaviour
 
     public async void SetValue(RankData data,int rank)
     {
-        imgHead.sprite = await ResMgr.Instance.LoadAtlasSpriteAsync("#" + data.id);
+        imgHead.sprite = await ResMgr.Instance.LoadSpriteAsync("#" + data.id);
         txtName.text = data.name;
         txtScore.text = data.score.ToString();
         txtRank.text = rank == 0 ? "暂未上榜" : rank.ToString();
