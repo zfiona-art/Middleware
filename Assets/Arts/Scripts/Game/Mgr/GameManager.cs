@@ -231,9 +231,10 @@ public class GameManager : MonoBehaviour
         if(!ToolUtil.IsProbabilityOk(p)) return false;
         var go = PoolManager.Instance.Get<Energy>("energy",rootEnergies);
         if (!go) return false;
-        
+
+        var id = ToolUtil.IsProbabilityOk(50) ? GlobalManager.Instance.ChapterId : Random.Range(1, 6);
         go.transform.position = ePos;
-        go.Init(Random.Range(1, 5));
+        go.Init(id);
         curSkillNum++;
         return true;
     }

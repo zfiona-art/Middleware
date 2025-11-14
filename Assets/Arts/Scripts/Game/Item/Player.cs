@@ -66,7 +66,7 @@ public class Player : PoolItem
     {
         bSpawnHandle.Cancel();
         var speed = data.FireSpeed + addition.fireSpeed + UpgradeManager.Instance.addition.fireSpeed;
-        var interval = Math.Max(0.2f, (10 - speed) / 10);
+        var interval = Math.Max(0.25f, (10 - speed) / 10);
         vp_Timer.In(interval, Fire,0,interval,bSpawnHandle);
     }
     

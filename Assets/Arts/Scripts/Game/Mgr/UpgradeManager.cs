@@ -6,6 +6,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
 {
     private Dictionary<EUpgradeItem,int> upgradeDic;
     public Addition addition;
+    private int cacheSkillId = 1;
 
     public override void Init()
     {
@@ -23,11 +24,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
             {EUpgradeItem.BulletDamage,10},
             {EUpgradeItem.CircleCount,4},
             {EUpgradeItem.CircleDamage,10},
-            {EUpgradeItem.Skill1,3},
-            {EUpgradeItem.Skill2,3},
-            {EUpgradeItem.Skill3,3},
-            {EUpgradeItem.Skill4,3},
-            {EUpgradeItem.Skill5,3},
+            {EUpgradeItem.Skill,3},
         };
         addition = new Addition();
         if (GlobalManager.Instance.GameLevel == 1)
@@ -47,8 +44,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             var key = (EUpgradeItem)Random.Range(0, upgradeDic.Count);
             var val = upgradeDic[key];
             if (val <= 0) continue;
-            if(key==EUpgradeItem.CircleDamage && addition.cCount==0) continue;
-            if(list.Contains(key)) continue;
+            if (list.Contains(key)) continue;
+            if (key == EUpgradeItem.Skill) 
+                cacheSkillId =ToolUtil.IsProbabilityOk(50) ? GlobalManager.Instance.ChapterId : Random.Range(1, 6);
             list.Add(key);
             count--;
         }
@@ -82,20 +80,17 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.CircleDamage:
                 describe = $"尖叫鸡伤害: +1%";
                 break;
-            case EUpgradeItem.Skill1:
-                describe = "得到1个旋风技能";
-                break;
-            case EUpgradeItem.Skill2:
-                describe = "得到1个火球技能";
-                break;
-            case EUpgradeItem.Skill3:
-                describe = "得到1个地刺技能";
-                break;
-            case EUpgradeItem.Skill4:
-                describe = "得到1个闪电技能";
-                break;
-            case EUpgradeItem.Skill5:
-                describe = "得到1个雷环技能";
+            case EUpgradeItem.Skill:
+                if(cacheSkillId == 1)
+                    describe = "得到1个旋风技能";
+                if(cacheSkillId == 2)
+                    describe = "得到1个火球技能";
+                if(cacheSkillId == 3)
+                    describe = "得到1个地刺技能";
+                if(cacheSkillId == 4)
+                    describe = "得到1个闪电技能";
+                if(cacheSkillId == 5)
+                    describe = "得到1个雷环技能";
                 break;
         }
         return describe;
@@ -130,28 +125,16 @@ public class UpgradeManager : Singleton<UpgradeManager>
             case EUpgradeItem.CircleDamage:
                 addition.cDamage += 1;
                 break;
-            case EUpgradeItem.Skill1:
-                OnSkillGet(1);
-                break;
-            case EUpgradeItem.Skill2:
-                OnSkillGet(2);
-                break;
-            case EUpgradeItem.Skill3:
-                OnSkillGet(3);
-                break;
-            case EUpgradeItem.Skill4:
-                OnSkillGet(4);
-                break;
-            case EUpgradeItem.Skill5:
-                OnSkillGet(5);
+            case EUpgradeItem.Skill:
+                OnSkillGet();
                 break;
         }
         upgradeDic[item]--;
     }
 
-    private void OnSkillGet(int id)
+    private void OnSkillGet()
     {
-        EventCtrl.SendEvent(EventDefine.OnSkillGet,id);
+        EventCtrl.SendEvent(EventDefine.OnSkillGet,cacheSkillId);
     }
     
     public enum EUpgradeItem
@@ -163,11 +146,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
         BulletDamage,
         CircleDamage,
         CircleCount,
-        Skill1,
-        Skill2,
-        Skill3,
-        Skill4,
-        Skill5,
+        Skill,
     }
 }
 
