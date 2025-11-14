@@ -6,7 +6,7 @@ using UnityEngine;
 public class Enemy5 : Enemy
 {
     private Vector3 direction = Vector3.one;
-    private float curCdTime;
+    private vp_Timer.Handle handle;
     private bool isFiring;
 
     public override void OnSpawn()
@@ -16,13 +16,19 @@ public class Enemy5 : Enemy
         GetComponent<Animator>().SetBool(runHash,true);
     }
 
+    public override void OnDespawn()
+    {
+        base.OnDespawn();
+        handle?.Cancel();
+    }
+
     protected override void DoLoop()
     {
         var distance = Vector2.Distance(rigid.position, target.position);
         if (distance < data.fireDistance + 0.2f && Math.Abs(rigid.position.y - target.position.y) < 0.2f)
         {
             isFiring = true;
-            TryFire();
+            vp_Timer.In(data.damageInterval, Fire, handle);
             return;
         }
         
@@ -36,16 +42,6 @@ public class Enemy5 : Enemy
         var dirVec = target.position - rigid.position + offset;
         var nextVec = data.moveSpeed * Time.fixedDeltaTime * dirVec.normalized;
         rigid.MovePosition(rigid.position + nextVec);
-    }
-    
-    private void TryFire()
-    {
-        curCdTime += Time.fixedDeltaTime;
-        if (curCdTime >= data.damageInterval)
-        {
-            curCdTime = 0;
-            Fire();
-        }
     }
 
     private void Fire()
