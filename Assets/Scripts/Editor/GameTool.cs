@@ -10,9 +10,9 @@ public class GameTool
     [MenuItem("Tools/CreateMap")] 
     private static void CreateMap()
     {
-        var data = Resources.Load<DataLevel>("Data/Level");
+        var data = AssetDatabase.LoadAssetAtPath<DataLevel>("Assets/Arts/AbRoot/Data/Level.asset");
         data.array.Clear();
-        var lines = File.ReadAllLines(Application.dataPath + "/Arts/Resources/Data/levels.txt");
+        var lines = File.ReadAllLines(Application.dataPath + "/Editor/levels.txt");
         foreach (var line in lines)
         {
             var level = new DataLevel.Level();

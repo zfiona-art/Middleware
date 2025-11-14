@@ -15,8 +15,17 @@ public class UIGame : UIBase
     private Text txtSchedule;
     private Text txtGameLevel;
     private Transform rootSkill;
+    private UIGradient top;
 
     private readonly vp_Timer.Handle timerHandle = new ();
+    private readonly List<Color32> colors = new List<Color32>()
+    {
+        new (65, 113, 3, 255),
+        new (223, 152, 44, 255),
+        new (37, 155, 186, 255),
+        new (18, 45, 57, 255),
+        new (57, 29, 17, 255),
+    };
     private int curLeftTime;
     
     public override void OnPostAwake()
@@ -33,6 +42,9 @@ public class UIGame : UIBase
     {
         TickTime(GameManager.Instance.GetMaxTickTime());
         txtGameLevel.text = $"关卡:{GlobalManager.Instance.GameLevel}";
+        var keys = top.gradient.colorKeys;
+        keys[1].color = colors[GlobalManager.Instance.ChapterId - 1];
+        top.gradient.colorKeys = keys;
     }
 
     private void TickTime(int tick)

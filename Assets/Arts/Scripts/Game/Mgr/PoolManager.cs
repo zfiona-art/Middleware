@@ -34,6 +34,7 @@ public class PoolManager : Singleton<PoolManager>
         await RegisterPool("enemy2", GameManager.Instance.rootEnemies);
         await RegisterPool("enemy3", GameManager.Instance.rootEnemies);
         await RegisterPool("enemy4", GameManager.Instance.rootEnemies);
+        await RegisterPool("enemy5", GameManager.Instance.rootEnemies);
         await RegisterPool("weapon", GameManager.Instance.rootBullets);
         await RegisterPool("weapon2", GameManager.Instance.rootBullets);
         await RegisterPool("enemy2_weapon", GameManager.Instance.rootBullets);
@@ -81,9 +82,10 @@ public class PoolManager : Singleton<PoolManager>
         }
         if (!item)
         {
-            item = Object.Instantiate(pools[pName][0], parent) as T;
+            item = Object.Instantiate(pools[pName][0]) as T;
             pools[pName].Add(item);
         }
+        item?.transform.SetParent(parent);
         item?.OnSpawn();
         return item;
     }

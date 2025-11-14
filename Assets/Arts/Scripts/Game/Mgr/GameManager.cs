@@ -157,8 +157,8 @@ public class GameManager : MonoBehaviour
                 // rootEnergies.gameObject.DestroyAllChild();
                 // rootBullets.gameObject.DestroyAllChild();
                 // rootSkills.gameObject.DestroyAllChild();
-                // rootGrounds.gameObject.DestroyAllChild();
                 // rootProps.gameObject.DestroyAllChild();
+                rootGrounds.gameObject.DestroyAllChild();
                 break;
             case GameStatus.Next:
                 SwitchState(GameStatus.End);
