@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Game Success!");
             SwitchState(GameStatus.Paused);
-            GlobalManager.Instance.SetLevelStar(player.star);
+            GlobalManager.Instance.SetLevelStar(player.star,GlobalManager.Instance.GameLevel);
             GlobalManager.Instance.GameLevel = Math.Min(dataLevel.array.Count, GlobalManager.Instance.GameLevel + 1);
             EventCtrl.SendEvent(EventDefine.OnGameLevelUp);
 

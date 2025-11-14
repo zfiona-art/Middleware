@@ -44,6 +44,15 @@ public class UIMain : UIBase
         }
     }
 
+    public override void Refresh()
+    {
+        txtCoin.text = GlobalManager.Instance.Coin.ToString();
+        txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
+        curChapter = GlobalManager.Instance.ChapterId;
+        InitUI();
+        UpdateChapter();
+    }
+    
     private async UniTask InitUI()
     {
         var id = GlobalManager.Instance.Avatar;
@@ -61,15 +70,6 @@ public class UIMain : UIBase
         UpdateLevelStars();
     }
     
-    public override void Refresh()
-    {
-        txtCoin.text = GlobalManager.Instance.Coin.ToString();
-        txtDiamond.text = GlobalManager.Instance.Diamond.ToString();
-        curChapter = GlobalManager.Instance.ChapterId;
-        InitUI();
-        UpdateChapter();
-    }
-
     private void RefreshCoin(object data)
     {
         txtCoin.text = GlobalManager.Instance.Coin.ToString();
@@ -86,22 +86,13 @@ public class UIMain : UIBase
 
     private void UpdateLevelStars()
     {
-        var oriStars = GlobalManager.Instance.GetLevelStars();
-        var newStars = new List<int>();
-        var count = GlobalManager.ChapterLevelCnt * (curChapter - 1);
-        for (var i = 0; i < GlobalManager.ChapterLevelCnt; i++)
-        {
-            if(count + i < oriStars.Count)
-                newStars.Add(oriStars[count + i]);
-            else
-                break;
-        }
+        var stars = GlobalManager.Instance.GetLevelStars();
         for (var i = 0; i < trLevels.childCount; i++)
         {
-            var cnt = i >= newStars.Count ? 0 : newStars[i];
+            var levelId = (curChapter - 1) * GlobalManager.ChapterLevelCnt + i;
             var go = trLevels.GetChild(i).GetComponent<ItemLevel>();
-            var isOn = (curChapter - 1) * GlobalManager.ChapterLevelCnt + i + 1 == GlobalManager.Instance.GameLevel;
-            go.Refresh(i, cnt, isOn);
+            var isOn = levelId + 1 == GlobalManager.Instance.GameLevel;
+            go.Refresh(i, stars[levelId], isOn);
         }
     }
 

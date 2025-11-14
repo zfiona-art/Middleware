@@ -58,21 +58,20 @@ public class GlobalManager : Singleton<GlobalManager>
         get => PlayerPrefs.GetString("LevelStarCache", null);
         set => PlayerPrefs.SetString("LevelStarCache", value);
     }
-    private List<int> levelStars;
-    public List<int> GetLevelStars()
+    private int[] levelStars;
+    public int[] GetLevelStars()
     {
-        levelStars ??= JsonConvert.DeserializeObject<List<int>>(LevelStarCache);
-        levelStars ??= new List<int>();
+        if (levelStars == null)
+        {
+            levelStars ??= JsonConvert.DeserializeObject<int[]>(LevelStarCache);
+            levelStars ??= new int[50];
+        }
         return levelStars;
     }
-    public void SetLevelStar(int star)
+    public void SetLevelStar(int star, int level)
     {
-        var ll = GetLevelStars();
-        if (GameLevel > ll.Count)
-            ll.Add(star);
-        else
-            ll[GameLevel - 1] = star;
-        LevelStarCache = JsonConvert.SerializeObject(ll);
+        levelStars[level - 1] = star;
+        LevelStarCache = JsonConvert.SerializeObject(levelStars);
     }
     
     private string AdditionCache
