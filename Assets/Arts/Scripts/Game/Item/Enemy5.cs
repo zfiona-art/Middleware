@@ -20,6 +20,8 @@ public class Enemy5 : Enemy
         var runHash = Animator.StringToHash("run");
         GetComponent<Animator>().SetBool(runHash,true);
         anim2 = transform.GetComponentInChildren<SkeletonAnimation>();
+        anim2.AnimationName = "xuli";
+        anim2.Initialize(true);
         weapon = transform.GetComponentInChildren<Enemy5Weapon>();
         weapon.damage = GetDamage();
     }
@@ -28,9 +30,7 @@ public class Enemy5 : Enemy
     {
         base.OnDespawn();
         handle?.Cancel();
-        anim2.AnimationName = "xuli";
-        anim2.Initialize(true);
-        weapon.DoHide();
+        weapon?.DoHide();
     }
 
     protected override void DoLoop()
