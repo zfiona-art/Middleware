@@ -82,15 +82,15 @@ public class UpgradeManager : Singleton<UpgradeManager>
                 break;
             case EUpgradeItem.Skill:
                 if(cacheSkillId == 1)
-                    describe = "得到1个旋风技能";
+                    describe = "得到1个地刺技能";
                 if(cacheSkillId == 2)
                     describe = "得到1个火球技能";
                 if(cacheSkillId == 3)
-                    describe = "得到1个地刺技能";
+                    describe = "得到1个旋风技能";
                 if(cacheSkillId == 4)
-                    describe = "得到1个闪电技能";
-                if(cacheSkillId == 5)
                     describe = "得到1个雷环技能";
+                if(cacheSkillId == 5)
+                    describe = "得到1个闪电技能";
                 break;
         }
         return describe;
