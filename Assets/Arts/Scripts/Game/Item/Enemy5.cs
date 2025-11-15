@@ -19,10 +19,10 @@ public class Enemy5 : Enemy
         handle =  new vp_Timer.Handle();
         var runHash = Animator.StringToHash("run");
         GetComponent<Animator>().SetBool(runHash,true);
-        anim2 = transform.GetComponentInChildren<SkeletonAnimation>();
+        anim2 = transform.GetComponentInChildren<SkeletonAnimation>(true);
         anim2.AnimationName = "xuli";
         anim2.Initialize(true);
-        weapon = transform.GetComponentInChildren<Enemy5Weapon>();
+        weapon = transform.GetComponentInChildren<Enemy5Weapon>(true);
         weapon.damage = GetDamage();
         weapon.DoHide();
     }
