@@ -24,6 +24,7 @@ public class Enemy5 : Enemy
         anim2.Initialize(true);
         weapon = transform.GetComponentInChildren<Enemy5Weapon>();
         weapon.damage = GetDamage();
+        weapon.DoHide();
     }
 
     public override void OnDespawn()
