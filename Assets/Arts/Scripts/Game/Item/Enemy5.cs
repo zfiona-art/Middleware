@@ -16,10 +16,11 @@ public class Enemy5 : Enemy
     {
         base.OnSpawn();
         isFiring = false;
+        handle =  new vp_Timer.Handle();
         var runHash = Animator.StringToHash("run");
         GetComponent<Animator>().SetBool(runHash,true);
-        anim2 = transform.Find("anim2").GetComponent<SkeletonAnimation>();
-        weapon = transform.Find("weapon").GetComponent<Enemy5Weapon>();
+        anim2 = transform.GetComponentInChildren<SkeletonAnimation>();
+        weapon = transform.GetComponentInChildren<Enemy5Weapon>();
         weapon.damage = GetDamage();
     }
 
@@ -35,13 +36,12 @@ public class Enemy5 : Enemy
     protected override void DoLoop()
     {
         var distance = Vector2.Distance(rigid.position, target.position);
-        if (distance < data.fireDistance + 0.5f && Math.Abs(rigid.position.y - target.position.y) < 0.2f)
+        if (distance < data.fireDistance + 0.5f && Math.Abs(rigid.position.y - target.position.y) < 0.5f)
         {
             TryFire();
-            return;
         }
-
-        StopFire();
+        
+        if(isFiring) return;
         // 方向
         var isRight = target.position.x < rigid.position.x;
         direction2.x = isRight ? 1 : -1;
@@ -59,12 +59,13 @@ public class Enemy5 : Enemy
         isFiring = true;
         anim2.AnimationName = "penghuo";
         anim2.Initialize(true);
-        vp_Timer.In(0, Fire, 0, data.damageInterval, handle);
+        Fire();
     }
 
     private void Fire()
     {
         weapon.DoShow();
+        vp_Timer.In(data.damageInterval, StopFire, handle);
     }
 
     private void StopFire()

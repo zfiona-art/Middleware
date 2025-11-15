@@ -8,6 +8,7 @@ public class Enemy5Weapon : Weapon
 {
     protected override bool AutoMissDispose => false;
     private BoxCollider2D c;
+    private Sequence seq;
     private void Awake()
     {
         c = GetComponent<BoxCollider2D>();
@@ -21,12 +22,13 @@ public class Enemy5Weapon : Weapon
     public void DoShow()
     {
         gameObject.SetActive(true);
+        if(seq != null) seq.Kill();
         
         var offset = new Vector2(1, -0.45f);
         var size = new Vector2(0.1f, 1);
         c.offset = offset;
         c.size = size;
-        var seq = DOTween.Sequence();
+        seq = DOTween.Sequence();
         var tween = DOTween.To(()=>offset.x,x=>offset.x=x,0f,0.5f);
         tween.OnUpdate(() =>
         {
@@ -40,7 +42,6 @@ public class Enemy5Weapon : Weapon
         {
             gameObject.SetActive(false);
         });
-
     }
 
     public void DoHide()
